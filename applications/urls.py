@@ -9,5 +9,6 @@ urlpatterns = [
     path('check-queue/', views.check_queue, name='check-queue'),
     path('list-queue/', views.list_queue, name='list-queue'),
     path('my-application/list/', views.my_applications, name='my-applications-list'),
-    path('my-application/create', views.create_application, name="create-application")
+    path('my-application/create', views.create_application, name="create-application"),
+    path('my-application/submit/', views.submit_application, name='submit_application'),
 ]

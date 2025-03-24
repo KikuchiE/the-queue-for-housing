@@ -7,18 +7,18 @@ class Application(models.Model):
         # ('DRAFT', 'Draft'),
         ('SUBMITTED', 'Submitted'),
         ('UNDER_REVIEW', 'Under Review'),
-        ('VERIFIED', 'Verified'),
+        # ('VERIFIED', 'Verified'),
         ('IN_QUEUE', 'In Queue'),
         ('HOUSING_OFFERED', 'Housing Offered'),
-        ('ACCEPTED', 'Accepted'),
-        ('REJECTED_BY_APPLICANT', 'Rejected by Applicant'),
+        ('ACCEPTED', 'Accepted'),           # Принял ли заявитель данный ему дом
+        ('REJECTED_BY_APPLICANT', 'Rejected by Applicant'), 
         ('REJECTED_BY_MANAGER', 'Rejected by Manager'),
-        ('EXPIRED', 'Expired'),
+        # ('EXPIRED', 'Expired'),
     ]
     
     applicant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
     application_number = models.CharField(max_length=20, unique=True)
-    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='DRAFT')
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='SUBMITTED')
     submission_date = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     
@@ -33,12 +33,12 @@ class Application(models.Model):
     ])
     
     monthly_income = models.DecimalField(max_digits=10, decimal_places=2)
+    current_living_area = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     is_veteran = models.BooleanField(default=False)
     is_single_parent = models.BooleanField(default=False)
     waiting_years = models.PositiveSmallIntegerField(default=0)
     
-    current_living_area = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     has_disability = models.BooleanField(default=False)
     disability_details = models.TextField(blank=True)
     
@@ -47,7 +47,7 @@ class Application(models.Model):
     # elderly_count = models.PositiveSmallIntegerField(default=0)
     
     priority_score = models.IntegerField(default=0)
-    queue_position = models.PositiveIntegerField(null=True, blank=True)
+    # queue_position = models.PositiveIntegerField(null=True, blank=True)
     
     # documents_valid_until = models.DateField(null=True, blank=True)
     document_verified = models.BooleanField(default=False)
