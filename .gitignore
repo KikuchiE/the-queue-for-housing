@@ -1,0 +1,9 @@
+venv/
+db.sqlite3
+/**/__pycache__/
+package-lock.json
+node_modules/
+package.json
+media/profile_pictures/*.png
+media/profile_pictures/*.jpg
+media/profile_pictures/*.jpeg

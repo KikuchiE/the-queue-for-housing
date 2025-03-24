@@ -1,0 +1,22 @@
+{% extends "users/base.html" %}
+{% block content %}
+<div class="max-w-md mx-auto bg-blue-400 p-6 rounded-lg shadow-md">
+    <form method="POST" class="space-y-4">
+        {% csrf_token %}
+        <h3 class="text-2xl font-semibold text-center">Signup</h3>
+        {{ form.as_p }}
+        <div class="mt-4">
+            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-300" type="submit">
+                Submit
+            </button>
+        </div>
+        
+    </form>
+    <div class="border-t pt-3 mt-4 text-center">
+        <small class="text-gray-600">
+            Already have an account? <a class="text-blue-600 hover:underline" href="{% url 'users:login' %}">Login here</a>
+        </small>
+    </div>
+</div>
+
+{% endblock %}

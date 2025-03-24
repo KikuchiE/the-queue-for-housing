@@ -1,0 +1,392 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mx-auto p-4">
+	<div class="flex justify-between items-center mb-4">
+		<h1 class="text-xl font-bold">Admin Application Review</h1>
+		<div>
+			<a href="#" class="text-blue-500 mr-4">Home</a>
+			<a href="#" class="text-gray-500">Admin Panel</a>
+		</div>
+	</div>
+
+	<!-- Application Search and Filters -->
+	<div class="bg-white p-6 rounded-lg shadow-md mb-6">
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+			<div>
+				<label class="block text-gray-700">Application Number</label>
+				<input type="text" class="w-full p-2 border border-gray-300 rounded mt-1" placeholder="Application Number" />
+			</div>
+			<div>
+				<label class="block text-gray-700">Applicant's IIN</label>
+				<input type="text" class="w-full p-2 border border-gray-300 rounded mt-1" placeholder="Applicant's IIN" />
+			</div>
+			<div>
+				<label class="block text-gray-700">Status</label>
+				<select class="w-full p-2 border border-gray-300 rounded mt-1">
+					<option value="">All Statuses</option>
+					<option value="SUBMITTED">Submitted</option>
+					<option value="UNDER_REVIEW">Under Review</option>
+					<option value="VERIFIED">Verified</option>
+					<option value="IN_QUEUE">In Queue</option>
+					<option value="HOUSING_OFFERED">Housing Offered</option>
+					<option value="ACCEPTED">Accepted</option>
+					<option value="REJECTED">Rejected</option>
+					<option value="EXPIRED">Expired</option>
+				</select>
+			</div>
+		</div>
+		<div class="flex space-x-4">
+			<button class="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
+			<button class="bg-gray-300 text-gray-700 px-4 py-2 rounded">Clear Filters</button>
+		</div>
+	</div>
+
+	<!-- Application List -->
+	<div class="bg-white p-6 rounded-lg shadow-md mb-6">
+		<h2 class="text-lg font-bold mb-4">Applications</h2>
+		<div class="overflow-x-auto">
+			<table class="min-w-full bg-white">
+				<thead>
+					<tr>
+						<th class="py-2 px-4 border-b">Application Number</th>
+						<th class="py-2 px-4 border-b">Applicant</th>
+						<th class="py-2 px-4 border-b">Status</th>
+						<th class="py-2 px-4 border-b">Submission Date</th>
+						<th class="py-2 px-4 border-b">Priority Score</th>
+						<th class="py-2 px-4 border-b">Queue Position</th>
+						<th class="py-2 px-4 border-b">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- Sample data rows -->
+					<tr>
+						<td class="py-2 px-4 border-b">APP000001</td>
+						<td class="py-2 px-4 border-b">John Doe</td>
+						<td class="py-2 px-4 border-b">
+							<span class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs">UNDER_REVIEW</span>
+						</td>
+						<td class="py-2 px-4 border-b">2025-03-10</td>
+						<td class="py-2 px-4 border-b">75</td>
+						<td class="py-2 px-4 border-b">3</td>
+						<td class="py-2 px-4 border-b">
+							<button class="bg-blue-500 text-white px-2 py-1 rounded text-xs" onclick="viewApplication('APP000001')">
+								Review
+							</button>
+						</td>
+					</tr>
+					<tr>
+						<td class="py-2 px-4 border-b">APP000002</td>
+						<td class="py-2 px-4 border-b">Jane Smith</td>
+						<td class="py-2 px-4 border-b">
+							<span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">VERIFIED</span>
+						</td>
+						<td class="py-2 px-4 border-b">2025-03-08</td>
+						<td class="py-2 px-4 border-b">85</td>
+						<td class="py-2 px-4 border-b">1</td>
+						<td class="py-2 px-4 border-b">
+							<button class="bg-blue-500 text-white px-2 py-1 rounded text-xs" onclick="viewApplication('APP000002')">
+								Review
+							</button>
+						</td>
+					</tr>
+					<tr>
+						<td class="py-2 px-4 border-b">APP000003</td>
+						<td class="py-2 px-4 border-b">Alex Johnson</td>
+						<td class="py-2 px-4 border-b">
+							<span class="px-2 py-1 bg-blue-200 text-blue-800 rounded-full text-xs">IN_QUEUE</span>
+						</td>
+						<td class="py-2 px-4 border-b">2025-03-05</td>
+						<td class="py-2 px-4 border-b">65</td>
+						<td class="py-2 px-4 border-b">5</td>
+						<td class="py-2 px-4 border-b">
+							<button class="bg-blue-500 text-white px-2 py-1 rounded text-xs" onclick="viewApplication('APP000003')">
+								Review
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="mt-4 flex justify-between items-center">
+			<span>Showing 1-3 of 3 applications</span>
+			<div class="flex space-x-2">
+				<button class="px-3 py-1 bg-gray-200 rounded">Previous</button>
+				<button class="px-3 py-1 bg-blue-500 text-white rounded">1</button>
+				<button class="px-3 py-1 bg-gray-200 rounded">Next</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Application Details Modal -->
+	<div id="applicationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+		<div class="bg-white p-6 rounded-lg shadow-lg w-3/4 max-h-screen overflow-y-auto">
+			<div class="flex justify-between items-center mb-4">
+				<h2 class="text-xl font-bold">
+					Application Details -
+					<span id="appNumber">APP000001</span>
+				</h2>
+				<button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<!-- Applicant Info -->
+				<div class="bg-gray-50 p-4 rounded-lg">
+					<h3 class="font-bold mb-2">Applicant Information</h3>
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<p class="text-gray-600 text-sm">Name:</p>
+							<p class="font-medium">John Doe</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">IIN:</p>
+							<p class="font-medium">123456789012</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Current Address:</p>
+							<p class="font-medium">123 Main St, Apt 4B</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Monthly Income:</p>
+							<p class="font-medium">75,000</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Family Members:</p>
+							<p class="font-medium">Adults: 2, Children: 1, Elderly: 0</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Current Living Area:</p>
+							<p class="font-medium">35 sq.m</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Waiting since:</p>
+							<p class="font-medium">2 years</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Priority Score:</p>
+							<p class="font-medium">75</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Application Status -->
+				<div class="bg-gray-50 p-4 rounded-lg">
+					<h3 class="font-bold mb-2">Application Status</h3>
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<p class="text-gray-600 text-sm">Current Status:</p>
+							<p><span class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs">UNDER_REVIEW</span></p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Submission Date:</p>
+							<p class="font-medium">2025-03-10</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Last Updated:</p>
+							<p class="font-medium">2025-03-15</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Queue Position:</p>
+							<p class="font-medium">3</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Documents Valid Until:</p>
+							<p class="font-medium">2025-09-10</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Documents Verified:</p>
+							<p class="font-medium">No</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Special Conditions -->
+				<div class="bg-gray-50 p-4 rounded-lg">
+					<h3 class="font-bold mb-2">Special Conditions</h3>
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<p class="text-gray-600 text-sm">Veteran Status:</p>
+							<p class="font-medium">No</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Single Parent:</p>
+							<p class="font-medium">Yes</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Disability:</p>
+							<p class="font-medium">No</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Homeless:</p>
+							<p class="font-medium">No</p>
+						</div>
+						<div>
+							<p class="text-gray-600 text-sm">Current Residence Condition:</p>
+							<p class="font-medium">Poor</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Application History -->
+				<div class="bg-gray-50 p-4 rounded-lg">
+					<h3 class="font-bold mb-2">Application History</h3>
+					<div class="overflow-y-auto max-h-40">
+						<table class="min-w-full">
+							<thead>
+								<tr>
+									<th class="py-2 text-left text-xs">Date</th>
+									<th class="py-2 text-left text-xs">From</th>
+									<th class="py-2 text-left text-xs">To</th>
+									<th class="py-2 text-left text-xs">By</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="py-1 text-xs">2025-03-10</td>
+									<td class="py-1 text-xs">DRAFT</td>
+									<td class="py-1 text-xs">SUBMITTED</td>
+									<td class="py-1 text-xs">Applicant</td>
+								</tr>
+								<tr>
+									<td class="py-1 text-xs">2025-03-12</td>
+									<td class="py-1 text-xs">SUBMITTED</td>
+									<td class="py-1 text-xs">UNDER_REVIEW</td>
+									<td class="py-1 text-xs">Admin User</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<!-- Update Application Status -->
+			<div class="mt-6 bg-gray-50 p-4 rounded-lg">
+				<h3 class="font-bold mb-2">Update Application Status</h3>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<div>
+						<label class="block text-gray-700 text-sm">Change Status To:</label>
+						<select class="w-full p-2 border border-gray-300 rounded mt-1" id="statusChange">
+							<option value="UNDER_REVIEW">Under Review</option>
+							<option value="VERIFIED">Verified</option>
+							<option value="IN_QUEUE">In Queue</option>
+							<option value="REJECTED">Rejected</option>
+						</select>
+					</div>
+					<div>
+						<div>
+							<label class="block text-gray-700 text-sm">Notes:</label>
+							<textarea class="w-full p-2 border border-gray-300 rounded mt-1" rows="1"></textarea>
+						</div>
+						<div class="flex items-end">
+							<button class="bg-blue-500 text-white px-4 py-2 rounded">Update Status</button>
+						</div>
+					</div>
+					<!-- Housing Allocation Section -->
+					<div class="mt-6 bg-gray-50 p-4 rounded-lg" id="housingAllocation">
+						<h3 class="font-bold mb-2">Housing Allocation</h3>
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+							<div>
+								<label class="block text-gray-700 text-sm">Available Housing Units:</label>
+								<select class="w-full p-2 border border-gray-300 rounded mt-1" id="housingUnit">
+									<option value="">Select a housing unit</option>
+									<option value="1">Unit 101 - 2 rooms, 50 sq.m, 3rd floor</option>
+									<option value="2">Unit 205 - 3 rooms, 65 sq.m, 2nd floor</option>
+									<option value="3">Unit 310 - 1 room, 35 sq.m, 1st floor</option>
+								</select>
+							</div>
+							<div>
+								<label class="block text-gray-700 text-sm">Response Deadline:</label>
+								<input type="date" class="w-full p-2 border border-gray-300 rounded mt-1" />
+							</div>
+							<div>
+								<label class="block text-gray-700 text-sm">Notes:</label>
+								<textarea class="w-full p-2 border border-gray-300 rounded mt-1" rows="1"></textarea>
+							</div>
+						</div>
+						<div class="flex space-x-4">
+							<button class="bg-green-500 text-white px-4 py-2 rounded">Offer Housing</button>
+						</div>
+					</div>
+					<!-- Currently Offered Housing -->
+					<div class="mt-6 bg-gray-50 p-4 rounded-lg hidden" id="currentOffer">
+						<h3 class="font-bold mb-2">Current Housing Offer</h3>
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div>
+								<p class="text-gray-600 text-sm">Housing Unit:</p>
+								<p class="font-medium">Unit 205 - 3 rooms, 65 sq.m, 2nd floor</p>
+							</div>
+							<div>
+								<p class="text-gray-600 text-sm">Offer Date:</p>
+								<p class="font-medium">2025-03-15</p>
+							</div>
+							<div>
+								<p class="text-gray-600 text-sm">Response Deadline:</p>
+								<p class="font-medium">2025-03-22</p>
+							</div>
+							<div>
+								<p class="text-gray-600 text-sm">Status:</p>
+								<p><span class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs">OFFERED</span></p>
+							</div>
+						</div>
+						<div class="mt-4">
+							<label class="block text-gray-700 text-sm">Update Offer Status:</label>
+							<div class="flex space-x-4 mt-2">
+								<button class="bg-green-500 text-white px-4 py-2 rounded">Mark as Accepted</button>
+								<button class="bg-red-500 text-white px-4 py-2 rounded">Mark as Declined</button>
+								<button class="bg-gray-500 text-white px-4 py-2 rounded">Mark as Expired</button>
+							</div>
+						</div>
+					</div>
+					<!-- Document Verification -->
+					<div class="mt-6 bg-gray-50 p-4 rounded-lg">
+						<h3 class="font-bold mb-2">Document Verification</h3>
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div>
+								<p class="text-gray-600 text-sm">Documents Submitted:</p>
+								<ul class="list-disc list-inside mt-1">
+									<li>Identity Document</li>
+									<li>Income Verification</li>
+									<li>Current Housing Contract</li>
+									<li>Family Composition Statement</li>
+								</ul>
+							</div>
+							<div>
+								<p class="text-gray-600 text-sm">Document Status:</p>
+								<p class="font-medium">Not Verified</p>
+							</div>
+						</div>
+						<div class="mt-4 flex space-x-4">
+							<button class="bg-blue-500 text-white px-4 py-2 rounded">Mark Documents as Verified</button>
+							<button class="bg-yellow-500 text-white px-4 py-2 rounded">Request Additional Documents</button>
+						</div>
+					</div>
+					<!-- Action Buttons -->
+					<div class="mt-6 flex justify-end space-x-4">
+						<button onclick="closeModal()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded">Close</button>
+					</div>
+				</div>
+			</div>
+			<!-- JavaScript for Modal Control -->
+			<script>
+				function viewApplication(appId) {
+					document.getElementById("appNumber").textContent = appId;
+					document.getElementById("applicationModal").classList.remove("hidden");
+				}
+
+				function closeModal() {
+					document.getElementById("applicationModal").classList.add("hidden");
+				}
+
+				// Show/hide housing allocation based on status
+				document.getElementById("statusChange").addEventListener("change", function () {
+					if (this.value === "VERIFIED" || this.value === "IN_QUEUE") {
+						document.getElementById("housingAllocation").classList.remove("hidden");
+					} else {
+						document.getElementById("housingAllocation").classList.add("hidden");
+					}
+				});
+			</script>
+			{% endblock %}
+		</div>
+	</div>
+</div>

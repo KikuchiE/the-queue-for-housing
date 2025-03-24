@@ -1,0 +1,115 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mx-auto p-4 mt-10">
+	<div class="bg-white p-6 rounded-lg shadow-lg">
+		<h1 class="text-2xl font-semibold mb-4">Queue Members</h1>
+		<div class="grid grid-cols-1 gap-4 mb-4">
+			<div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="iin" class="block text-sm font-medium text-gray-700">IIN</label>
+                    <input
+                        type="text"
+                        id="iin"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    />
+                </div>
+				<div>
+					<label for="queue-list" class="block text-sm font-medium text-gray-700">Queue List</label>
+					<select
+						id="queue-list"
+						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+					>
+						<option>Socially Vulnerable Population</option>
+					</select>
+				</div>
+			</div>
+			<div class="grid grid-cols-2 gap-4">
+				<div>
+					<label for="queue-number-from" class="block text-sm font-medium text-gray-700">Queue Number From</label>
+					<input
+						type="number"
+						id="queue-number-from"
+						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+						value="1"
+					/>
+				</div>
+				<div>
+					<label for="queue-number-to" class="block text-sm font-medium text-gray-700">Queue Number To</label>
+					<input
+						type="number"
+						id="queue-number-to"
+						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+						value="100"
+					/>
+				</div>
+			</div>
+		</div>
+		<button
+			class="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+		>
+			<i class="fas fa-search"></i>
+			Search
+		</button>
+	</div>
+	<div class="bg-white mt-6 p-6 rounded-lg shadow-lg">
+		<div class="overflow-x-auto">
+			<table class="min-w-full divide-y divide-gray-200">
+				<thead class="bg-gray-50">
+					<tr>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							Queue Number
+						</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							Queue List
+						</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							Queue Subcategory
+						</th>
+					</tr>
+				</thead>
+				<tbody class="bg-white divide-y divide-gray-200">
+					<tr>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">TERLIKBAEVA G. S.</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Socially Vulnerable Population</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+							Person suffering from severe forms of certain chronic diseases listed in the legally approved list of diseases.
+						</td>
+					</tr>
+					<tr>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">UTENYSHEV E. N.</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Socially Vulnerable Population</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Persons with disabilities (1st and 2nd groups)</td>
+					</tr>
+					<tr>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">TUYAKBAEVA Z. H.</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">3</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Socially Vulnerable Population</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Single-parent family</td>
+					</tr>
+					<tr>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">SEGIZBAEV B. B.</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">4</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Socially Vulnerable Population</td>
+						<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+							Families with children with disabilities
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="mt-4 flex justify-between items-center">
+			<div class="text-sm text-gray-700">Total Records: 100</div>
+			<div class="flex space-x-1">
+				<button class="px-3 py-1 rounded-md bg-blue-600 text-white">1</button>
+				<button class="px-3 py-1 rounded-md bg-gray-200 text-gray-700">2</button>
+				<button class="px-3 py-1 rounded-md bg-gray-200 text-gray-700">3</button>
+				<span class="px-3 py-1 rounded-md bg-gray-200 text-gray-700">...</span>
+				<button class="px-3 py-1 rounded-md bg-gray-200 text-gray-700">7</button>
+				<button class="px-3 py-1 rounded-md bg-gray-200 text-gray-700"><i class="fas fa-chevron-right"></i></button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

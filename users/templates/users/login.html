@@ -1,0 +1,35 @@
+{% extends "users/base.html" %}
+{% block content %}
+    <div class="w-full flex justify-center items-center h-screen">
+    <div class="max-w-md mx-auto bg-blue-400 p-6 rounded-lg shadow-md">
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <h3 class="text-2xl font-semibold text-center">Login</h3>
+            {{ form.as_p }}
+            <div class="mt-4">
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-300" type="submit">
+                    Submit
+                </button>
+            </div>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="p-1 mb-1 text-red-500 rounded-lg">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            <div class="mt-2 text-center">
+                <small>
+                    {% comment %} <a class="text-red-600 hover:underline" href="{% url 'users:password_reset' %}">Forgot Password?</a> {% endcomment %}
+                </small>
+            </div>
+        </form>
+        <div class="border-t pt-3 mt-4 text-center">
+            <small class="text-gray-600">
+                New Here? <a class="text-blue-600 hover:underline" href="{% url 'users:signup' %}">Create account</a>
+            </small>
+        </div>
+    </div>
+    </div>
+
+{% endblock %}

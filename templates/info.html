@@ -1,0 +1,94 @@
+{% extends "base.html" %} {% block content %}
+<div class="mt-16">
+	<div class="bg-white p-6 rounded shadow-md mb-6">
+        <div class="relative w-full max-w-5xl">
+            <div class="relative bg-gradient-to-r from-purple-700 to-purple-900 text-white rounded-lg overflow-hidden">
+                <!-- Background Image -->
+                <img 
+                    src="https://storage.googleapis.com/a1aa/image/1QMa9gFlNCeC3q1fnryn3T0UDNx8ZegV5JsGB4y-mOI.jpg" 
+                    alt="Modern house with a pool" 
+                    class="w-full h-80 object-cover opacity-70 z-0"
+                />
+        
+                <!-- Overlay Content -->
+                <div class="absolute inset-0 flex flex-col justify-center items-start px-10">
+                    <div class="flex items-center space-x-2">
+                        {% comment %} <img src="logo-placeholder.svg" alt="Logo" class="w-8 h-8" /> {% endcomment %}
+                        <span class="text-2xl font-bold">Altyn Ui</span>
+                    </div>
+                    <h2 class="text-3xl font-semibold mt-2">Housing Queue Management System</h2>
+                    <button class="mt-4 bg-white text-purple-800 font-medium px-6 py-2 rounded-lg shadow-md">
+                        Personal Account
+                    </button>
+                </div>
+            </div>
+        </div>
+        <p class="text-gray-600 mb-6 mt-4">
+            Our system simplifies and automates the process of applying for government or municipal housing. 
+            With intelligent priority calculations, real-time availability checks, and seamless integration with 
+            government registries, it ensures a transparent and efficient housing distribution process.
+        </p>
+    
+        <h3 class="text-xl font-semibold text-gray-700 mb-3">Why Choose Our System?</h3>
+        <ul class="list-disc list-inside text-gray-600 space-y-2">
+            <li><span class="font-medium text-gray-800">Easy Application Process</span> – Submit your housing request with detailed living conditions in just a few steps.</li>
+            <li><span class="font-medium text-gray-800">Fair and Automated Queue System</span> – Prioritization is based on objective criteria like income, family size, and special needs.</li>
+            <li><span class="font-medium text-gray-800">Real-Time Updates</span> – Track your application status and receive timely notifications about progress in the queue.</li>
+            <li><span class="font-medium text-gray-800">Full Control for Administrators</span> – Manage applications, issue document update reminders, and ensure smooth operations through a dedicated admin panel.</li>
+            <li><span class="font-medium text-gray-800">Seamless Integration</span> – Connect with government registries for accurate and up-to-date information.</li>
+        </ul>
+    
+        <p class="mt-6 font-semibold text-gray-800 text-lg">Effortless. Transparent. Reliable.</p>
+        <p class="text-gray-600">Managing housing applications has never been easier!</p>
+	</div>
+	<div class="bg-white p-6 rounded shadow-md">
+		<div class="text-xl font-semibold mb-4">Video instructions</div>
+		<ul class="list-disc list-inside">
+			<li onclick="openModal()">User registration on the housing queue</li>
+			<li onclick="openModal()">Overview of the user's general personal account on the service</li>
+			<li onclick="openModal()">Apply for placement in the housing queue</li>
+		</ul>
+	</div>
+	<!-- Modal -->
+	<div id="modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
+		<div class="bg-white p-6 rounded shadow-md relative">
+			<button class="absolute top-2 right-2 text-gray-600" onclick="closeModal()">
+				<i class="fas fa-times"></i>
+			</button>
+			<div class="text-xl font-semibold mb-4">Регистрация пользователя на Kezekte.kz</div>
+			<iframe
+				width="560"
+				height="315"
+				src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+				title="YouTube video player"
+				frameborder="0"
+				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+				allowfullscreen
+			></iframe>
+		</div>
+	</div>
+	<script>
+		function openModal() {
+			document.getElementById("modal").classList.remove("hidden");
+		}
+
+		function closeModal() {
+			document.getElementById("modal").classList.add("hidden");
+		}
+
+		window.onclick = function (event) {
+			let modal = document.getElementById("modal");
+			if (event.target === modal) {
+				closeModal();
+			}
+		};
+	</script>
+
+	<style>
+		.hidden {
+			display: none;
+		}
+	</style>
+</div>
+
+{% endblock %}

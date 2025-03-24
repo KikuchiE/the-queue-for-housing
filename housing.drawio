@@ -1,0 +1,107 @@
+<mxfile host="65bd71144e">
+    <diagram id="b7u6KB0Zx9WfUBWZLJPM" name="Page-1">
+        <mxGraphModel dx="2964" dy="1858" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1200" background="none" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="node4" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;applications_application&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0 0 0 4px;line-height:1.6;&quot;&gt; application_number: varchar(20)&lt;br/&gt; status: varchar(20)&lt;br/&gt; submission_date: datetime&lt;br/&gt; last_updated: datetime&lt;br/&gt; current_address: text&lt;br/&gt; is_homeless: bool&lt;br/&gt; current_residence_condition: varchar(50)&lt;br/&gt; monthly_income: decimal&lt;br/&gt; has_disability: bool&lt;br/&gt; disability_details: text&lt;br/&gt; adults_count: smallint unsigned&lt;br/&gt; children_count: smallint unsigned&lt;br/&gt; elderly_count: smallint unsigned&lt;br/&gt; priority_score: integer&lt;br/&gt; queue_position: integer unsigned&lt;br/&gt; documents_valid_until: date&lt;br/&gt; applicant_id: bigint&lt;br/&gt; current_living_area: decimal&lt;br/&gt; document_verified: bool&lt;br/&gt; is_single_parent: bool&lt;br/&gt; is_veteran: bool&lt;br/&gt; waiting_years: smallint unsigned&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0 0 0 4px;line-height:1.6;&quot;&gt; id: integer&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=14;fontFamily=Helvetica;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="7" y="470" width="286" height="592" as="geometry"/>
+                </mxCell>
+                <mxCell id="node2" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;applications_applicationhistory&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0 0 0 4px;line-height:1.6;&quot;&gt; previous_status: varchar(20)&lt;br/&gt; new_status: varchar(20)&lt;br/&gt; change_date: datetime&lt;br/&gt; notes: text&lt;br/&gt; application_id: bigint&lt;br/&gt; changed_by_id: bigint&lt;br/&gt; rejection_reason: text&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0 0 0 4px;line-height:1.6;&quot;&gt; id: integer&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=14;fontFamily=Helvetica;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="-1" y="1164" width="302" height="232" as="geometry"/>
+                </mxCell>
+                <mxCell id="node5" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;housing_units_housingallocation&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0 0 0 4px;line-height:1.6;&quot;&gt; offer_date: date&lt;br/&gt; response_deadline: date&lt;br/&gt; status: varchar(20)&lt;br/&gt; rejection_reason: text&lt;br/&gt; response_date: date&lt;br/&gt; tenancy_start_date: date&lt;br/&gt; tenancy_end_date: date&lt;br/&gt; notes: text&lt;br/&gt; application_id: bigint&lt;br/&gt; changed_by_id: bigint&lt;br/&gt; housing_unit_id: bigint&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0 0 0 4px;line-height:1.6;&quot;&gt; id: integer&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=14;fontFamily=Helvetica;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="1430" width="309" height="328" as="geometry"/>
+                </mxCell>
+                <mxCell id="node0" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;housing_units_housingunit&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0 0 0 4px;line-height:1.6;&quot;&gt; unit_number: varchar(20)&lt;br/&gt; address: text&lt;br/&gt; floor: smallint unsigned&lt;br/&gt; total_area: decimal&lt;br/&gt; rooms_count: smallint unsigned&lt;br/&gt; status: varchar(20)&lt;br/&gt; is_accessible: bool&lt;br/&gt; has_elevator: bool&lt;br/&gt; has_heating: bool&lt;br/&gt; last_inspection_date: date&lt;br/&gt; next_available_date: date&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0 0 0 4px;line-height:1.6;&quot;&gt; id: integer&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=14;fontFamily=Helvetica;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="382" y="630" width="257" height="328" as="geometry"/>
+                </mxCell>
+                <mxCell id="node1" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;notifications_notification&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0 0 0 4px;line-height:1.6;&quot;&gt; notification_type: varchar(20)&lt;br/&gt; title: varchar(100)&lt;br/&gt; message: text&lt;br/&gt; created_at: datetime&lt;br/&gt; status: varchar(10)&lt;br/&gt; sent_at: datetime&lt;br/&gt; application_id: bigint&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0 0 0 4px;line-height:1.6;&quot;&gt; id: integer&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=14;fontFamily=Helvetica;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="-160" y="1450" width="249" height="232" as="geometry"/>
+                </mxCell>
+                <mxCell id="node3" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;users_user&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0 0 0 4px;line-height:1.6;&quot;&gt; password: varchar(128)&lt;br/&gt; last_login: datetime&lt;br/&gt; is_superuser: bool&lt;br/&gt; phone: varchar(15)&lt;br/&gt; email: varchar(255)&lt;br/&gt; first_name: varchar(255)&lt;br/&gt; last_name: varchar(255)&lt;br/&gt; middle_name: varchar(255)&lt;br/&gt; is_active: bool&lt;br/&gt; is_staff: bool&lt;br/&gt; is_admin: bool&lt;br/&gt; iin: varchar(12)&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0 0 0 4px;line-height:1.6;&quot;&gt; id: integer&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=14;fontFamily=Helvetica;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="185" y="-40" width="197" height="352" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge1" value="" style="html=1;rounded=1;edgeStyle=orthogonalEdgeStyle;dashed=0;startArrow=none;endArrow=block;endSize=12;strokeColor=#595959;exitX=0.500;exitY=0.000;exitDx=0;exitDy=0;entryX=0.250;entryY=1.000;entryDx=0;entryDy=0;" parent="1" source="node4" target="node3" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="150" y="312"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="label8" value="applicant_id:id" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=top;strokeColor=default;" parent="edge1" vertex="1" connectable="0">
+                    <mxGeometry x="103" y="442" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge5" value="" style="html=1;rounded=1;edgeStyle=orthogonalEdgeStyle;dashed=0;startArrow=none;endArrow=block;endSize=12;strokeColor=#595959;exitX=0.250;exitY=0.000;exitDx=0;exitDy=0;entryX=0.500;entryY=1.000;entryDx=0;entryDy=0;" parent="1" source="node2" target="node4" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="75" y="1140"/>
+                            <mxPoint x="150" y="1140"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="label32" value="application_id:id" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=top;strokeColor=default;" parent="edge5" vertex="1" connectable="0">
+                    <mxGeometry x="22" y="1122" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge0" value="" style="html=1;rounded=1;edgeStyle=orthogonalEdgeStyle;dashed=0;startArrow=none;endArrow=block;endSize=12;strokeColor=#595959;exitX=0.750;exitY=0.000;exitDx=0;exitDy=0;entryX=0.750;entryY=1.000;entryDx=0;entryDy=0;" parent="1" source="node2" target="node3" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="226" y="1120"/>
+                            <mxPoint x="310" y="1120"/>
+                            <mxPoint x="310" y="420"/>
+                            <mxPoint x="319" y="420"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="label2" value="changed_by_id:id" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=top;strokeColor=default;" parent="edge0" vertex="1" connectable="0">
+                    <mxGeometry x="170" y="1102" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge3" value="" style="html=1;rounded=1;edgeStyle=orthogonalEdgeStyle;dashed=0;startArrow=none;endArrow=block;endSize=12;strokeColor=#595959;exitX=0.167;exitY=0.000;exitDx=0;exitDy=0;entryX=0.500;entryY=1.000;entryDx=0;entryDy=0;" parent="1" source="node5" target="node4" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="387" y="1140"/>
+                            <mxPoint x="150" y="1140"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="label20" value="application_id:id" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=top;strokeColor=default;" parent="edge3" vertex="1" connectable="0">
+                    <mxGeometry x="282" y="1131" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge6" value="" style="html=1;rounded=1;edgeStyle=orthogonalEdgeStyle;dashed=0;startArrow=none;endArrow=block;endSize=12;strokeColor=#595959;exitX=0.833;exitY=0.000;exitDx=0;exitDy=0;entryX=0.500;entryY=1.000;entryDx=0;entryDy=0;" parent="1" source="node5" target="node0" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="593" y="1380"/>
+                            <mxPoint x="510" y="1380"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="label38" value="housing_unit_id:id" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=top;strokeColor=default;" parent="edge6" vertex="1" connectable="0">
+                    <mxGeometry x="530" y="1350" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge4" value="" style="html=1;rounded=1;edgeStyle=orthogonalEdgeStyle;dashed=0;startArrow=none;endArrow=block;endSize=12;strokeColor=#595959;exitX=0.500;exitY=0.000;exitDx=0;exitDy=0;entryX=0.750;entryY=1.000;entryDx=0;entryDy=0;" parent="1" source="node5" target="node3" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="475" y="1120"/>
+                            <mxPoint x="350" y="1120"/>
+                            <mxPoint x="350" y="470"/>
+                            <mxPoint x="360" y="470"/>
+                            <mxPoint x="360" y="420"/>
+                            <mxPoint x="333" y="420"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge2" value="" style="html=1;rounded=1;edgeStyle=orthogonalEdgeStyle;dashed=0;startArrow=none;endArrow=block;endSize=12;strokeColor=#595959;exitX=0.500;exitY=0.000;exitDx=0;exitDy=0;entryX=0.500;entryY=1.000;entryDx=0;entryDy=0;" parent="1" source="node1" target="node4" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="-30" y="1140"/>
+                            <mxPoint x="150" y="1140"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="label14" value="application_id:id" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=top;strokeColor=default;" parent="edge2" vertex="1" connectable="0">
+                    <mxGeometry x="45" y="1099" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
