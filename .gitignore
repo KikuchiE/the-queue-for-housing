@@ -7,4 +7,5 @@ package.json
 media/profile_pictures/*.png
 media/profile_pictures/*.jpg
 media/profile_pictures/*.jpeg
+media/application_documents/*
 .idea/

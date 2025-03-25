@@ -65,71 +65,59 @@
                 <div id="family-data" class="form-section hidden">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div class="form-group">
-                            <label class="flex items-center">
-                                {{ family_form.is_single_parent }}
-                                <span>Родитель-одиночка</span>
-                            </label>
+                            <label class="block text-gray-700 mb-2">Количество взрослых</label>
+                            {{ family_form.adults_count }}
                         </div>
                         <div class="form-group">
-                            <label class="flex items-center">
-                                {{ family_form.is_veteran }}
-                                <span>Ветеран</span>
-                            </label>
+                            <label class="block text-gray-700 mb-2">Количество детей</label>
+                            {{ family_form.children_count }}
                         </div>
                         <div class="form-group">
-                            <label class="flex items-center">
-                                {{ family_form.has_disability }}
-                                <span>Наличие инвалидности</span>
-                            </label>
+                            <label class="block text-gray-700 mb-2">Количество пожилых</label>
+                            {{ family_form.elderly_count }}
                         </div>
-                        <div class="form-group" id="disability-document-group">
-                            <label class="block text-gray-700 mb-2">
-                                Документ об инвалидности
-                                <span class="text-red-500">*</span>
-                            </label>
-                            <div class="flex items-center">
-                                {{ family_form.applicant_disability }}
+                        
+                        <div class="form-group col-span-1 md:col-span-2">
+                            <div class="border p-3 rounded mb-2">
+                                <label class="flex items-center mb-2">
+                                    {{ family_form.is_single_parent }}
+                                    <span>Родитель-одиночка</span>
+                                </label>
+                                <div class="document-upload-field ml-6" id="single-parent-document-div">
+                                    <label class="block text-gray-700 mb-1">Загрузить подтверждающий документ</label>
+                                    {{ family_form.is_single_parent_document }}
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Household Members Section -->
-                    <div class="mt-6 border-t pt-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-semibold">Family Members</h3>
-                            <button id="add-member-button" type="button" class="bg-green-500 text-white py-2 px-4 rounded flex items-center">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5 mr-1"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                Add Family Member
-                            </button>
+                        
+                        <div class="form-group col-span-1 md:col-span-2">
+                            <div class="border p-3 rounded mb-2">
+                                <label class="flex items-center mb-2">
+                                    {{ family_form.is_veteran }}
+                                    <span>Ветеран</span>
+                                </label>
+                                <div class="document-upload-field ml-6" id="veteran-document-div">
+                                    <label class="block text-gray-700 mb-1">Загрузить удостоверение ветерана</label>
+                                    {{ family_form.is_veteran_document }}
+                                </div>
+                            </div>
                         </div>
-
-                        <!-- Household Members Table -->
-                        <div class="overflow-x-auto">
-                            <table class="w-full border-collapse" id="household-members-table">
-                                <thead>
-                                    <tr class="bg-gray-100">
-                                        <th class="border p-2 text-left">Full Name</th>
-                                        <th class="border p-2 text-left">Date of Birth</th>
-                                        <th class="border p-2 text-left">Relationship</th>
-                                        <th class="border p-2 text-left">Disability</th>
-                                        <th class="border p-2 text-left">Documents</th>
-                                        <th class="border p-2 text-left">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="household-members-list">
-                                    <tr class="text-center text-gray-500">
-                                        <td colspan="6" class="border p-4">No family members added</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        
+                        <div class="form-group col-span-1 md:col-span-2">
+                            <div class="border p-3 rounded mb-2">
+                                <label class="flex items-center mb-2">
+                                    {{ family_form.has_disability }}
+                                    <span>Наличие инвалидности</span>
+                                </label>
+                                <div class="document-upload-field ml-6" id="disability-document-div">
+                                    <label class="block text-gray-700 mb-1">Загрузить документ об инвалидности</label>
+                                    {{ family_form.disability_document }}
+                                </div>
+                                <div class="ml-6 mt-2" id="disability-details-div">
+                                    <label class="block text-gray-700 mb-1">Детали инвалидности</label>
+                                    {{ family_form.disability_details }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -202,98 +190,30 @@
     </div>
 </div>
 
-<!-- Household Member Modal -->
-<div id="member-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-2xl">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold">Добавить члена семьи</h3>
-            <button id="close-modal" class="text-gray-500 hover:text-gray-700" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle document upload fields visibility
+    const toggleDocumentField = function(checkboxId, documentDivId) {
+        const checkbox = document.getElementById(checkboxId);
+        const documentDiv = document.getElementById(documentDivId);
+        
+        if (checkbox && documentDiv) {
+            documentDiv.style.display = checkbox.checked ? 'block' : 'none';
+            checkbox.addEventListener('change', function() {
+                documentDiv.style.display = this.checked ? 'block' : 'none';
+            });
+        }
+    };
 
-        <form id="member-form" class="space-y-4">
-            {% csrf_token %}
-            <input type="hidden" id="member-id" value="" />
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="form-group">
-                    <label class="block text-gray-700 mb-2">
-                        ФИО
-                        <span class="text-red-500">*</span>
-                    </label>
-                    {{ household_form.full_name }}
-                </div>
-
-                <div class="form-group">
-                    <label class="block text-gray-700 mb-2">
-                        Дата рождения
-                        <span class="text-red-500">*</span>
-                    </label>
-                    {{ household_form.date_of_birth }}
-                </div>
-
-                <div class="form-group">
-                    <label class="block text-gray-700 mb-2">
-                        Отношение
-                        <span class="text-red-500">*</span>
-                    </label>
-                    {{ household_form.relationship }}
-                </div>
-
-                <div class="form-group">
-                    <label class="flex items-center">
-                        {{ household_form.has_disability }}
-                        <span>Имеет инвалидность</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="border-t pt-4">
-                <h4 class="font-medium mb-3">Документы</h4>
-
-                <div class="space-y-4">
-                    <!-- ID Document - Required for all -->
-                    <div class="form-group">
-                        <label class="block text-gray-700 mb-2">
-                            Документ, удостоверяющий личность
-                            <span class="text-red-500">*</span>
-                        </label>
-                        <div class="flex items-center">
-                            {{ household_form.document_id }}
-                        </div>
-                    </div>
-
-                    <!-- Birth Certificate - Required for children -->
-                    <div class="form-group" id="birth-certificate-group">
-                        <label class="block text-gray-700 mb-2">Свидетельство о рождении</label>
-                        <div class="flex items-center">
-                            {{ household_form.document_birth }}
-                        </div>
-                    </div>
-
-                    <!-- Disability Certificate - Only shown if disability is checked -->
-                    <div class="form-group hidden" id="disability-document-group">
-                        <label class="block text-gray-700 mb-2">
-                            Документ об инвалидности
-                            <span class="text-red-500">*</span>
-                        </label>
-                        <div class="flex items-center">
-                            {{ household_form.document_disability }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-end space-x-3 pt-4 border-t">
-                <button type="button" id="cancel-member" class="bg-gray-300 text-gray-800 py-2 px-4 rounded">Отмена</button>
-                <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">Сохранить</button>
-            </div>
-        </form>
-    </div>
-</div>
+    // Initialize document upload fields
+    toggleDocumentField('{{ family_form.is_single_parent.auto_id }}', 'single-parent-document-div');
+    toggleDocumentField('{{ family_form.is_veteran.auto_id }}', 'veteran-document-div');
+    toggleDocumentField('{{ family_form.has_disability.auto_id }}', 'disability-document-div');
+    toggleDocumentField('{{ family_form.has_disability.auto_id }}', 'disability-details-div');
+    
+    // Rest of your JavaScript from application_better.js should be added here
+});
+</script>
 
 <script src="{% static 'js/application_better.js' %}"></script>
 {% endblock %}

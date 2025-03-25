@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+import os, uuid
 
 # Create your models here.
 class Application(models.Model):
@@ -13,6 +14,7 @@ class Application(models.Model):
         ('ACCEPTED', 'Accepted'),           # Принял ли заявитель данный ему дом
         ('REJECTED_BY_APPLICANT', 'Rejected by Applicant'), 
         ('REJECTED_BY_MANAGER', 'Rejected by Manager'),
+        # ('CANCELLED', 'Cancelled'),
         # ('EXPIRED', 'Expired'),
     ]
     
@@ -42,12 +44,11 @@ class Application(models.Model):
     has_disability = models.BooleanField(default=False)
     disability_details = models.TextField(blank=True)
     
-    # adults_count = models.PositiveSmallIntegerField(default=1)
-    # children_count = models.PositiveSmallIntegerField(default=0)
-    # elderly_count = models.PositiveSmallIntegerField(default=0)
+    adults_count = models.PositiveSmallIntegerField(default=1)
+    children_count = models.PositiveSmallIntegerField(default=0)
+    elderly_count = models.PositiveSmallIntegerField(default=0)
     
     priority_score = models.IntegerField(default=0)
-    # queue_position = models.PositiveIntegerField(null=True, blank=True)
     
     # documents_valid_until = models.DateField(null=True, blank=True)
     document_verified = models.BooleanField(default=False)
@@ -64,18 +65,18 @@ class Application(models.Model):
             income_factor = (reference_income - self.monthly_income) / reference_income
             score += int(income_factor * 20)  # Max 20 points for income
         
-        # score += self.children_count * 10
+        score += self.children_count * 10
         if self.has_disability:
             score += 15
         
-        # if (self.adults_count + self.children_count + self.elderly_count) > 0 and self.current_living_area:
-        #     space_per_person = self.current_living_area / (self.adults_count + self.children_count + self.elderly_count)
-        #     if space_per_person < 6:
-        #         score += 15
-        #     elif space_per_person < 10:
-        #         score += 10
-        #     elif space_per_person < 15:
-        #         score += 5
+        if (self.adults_count + self.children_count + self.elderly_count) > 0 and self.current_living_area:
+            space_per_person = self.current_living_area / (self.adults_count + self.children_count + self.elderly_count)
+            if space_per_person < 6:
+                score += 15
+            elif space_per_person < 10:
+                score += 10
+            elif space_per_person < 15:
+                score += 5
 
         if self.is_veteran:
             score += 10
@@ -97,7 +98,7 @@ class Application(models.Model):
                 self.application_number = f"APP{last_id + 1:06d}"
             else:
                 self.application_number = "APP000001"
-        
+
         super().save(*args, **kwargs)
 
 
@@ -113,49 +114,36 @@ class ApplicationHistory(models.Model):
     def __str__(self):
         return f"{self.application.application_number}: {self.previous_status} → {self.new_status}"
 
-
 class ApplicationDocument(models.Model):
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='documents')
     document_type = models.CharField(max_length=50, choices=[
-        # ('ID_PROOF', 'ID Proof'),
         ('INCOME_STATEMENT', 'Income Statement'),
         ('DISABILITY_CERTIFICATE', 'Disability Certificate'),
         ('VETERAN_STATUS', 'Veteran Status'),
-
-        # ('RESIDENCE_PROOF', 'Residence Proof'),
+        ('SINGLE_PARENT_PROOF', 'Single Parent Proof'),
         ('OTHER', 'Other'),
     ])
     file = models.FileField(upload_to='application_documents/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    
+    document_name = models.CharField(max_length=255, blank=True)
+
     def __str__(self):
         return f"{self.application.application_number} - {self.get_document_type_display()}"
 
-class HouseholdMember(models.Model):
-    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='household_members')
-    full_name = models.CharField(max_length=100)
-    date_of_birth = models.DateField()
-    relationship = models.CharField(max_length=50, choices=[
-        ('SPOUSE', 'Spouse'),
-        ('CHILD', 'Child'),
-        ('PARENT', 'Parent'),
-        ('SIBLING', 'Sibling'),
-        ('OTHER', 'Other'),
-    ])
-    has_disability = models.BooleanField(default=False)
-    
-    def __str__(self):
-        return f"{self.full_name} ({self.get_relationship_display()})"
+    def save(self, *args, **kwargs):
+        """Ensure unique file name and document name."""
+        if not self.document_name:
+            base_name, ext = os.path.splitext(self.file.name)
+            unique_filename = f"{uuid.uuid4().hex}{ext}"
+            self.file.name = unique_filename
 
-class HouseholdDocument(models.Model):
-    household_member = models.ForeignKey(HouseholdMember, on_delete=models.CASCADE, related_name='documents')
-    document_type = models.CharField(max_length=50, choices=[
-        ('ID_PROOF', 'ID Proof'),
-        ('DISABILITY_CERTIFICATE', 'Disability Certificate'),
-        ('OTHER', 'Other'),
-    ])
-    file = models.FileField(upload_to='household_documents/')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+            # Ensure uniqueness of document_name in the same application
+            count = 1
+            new_name = base_name
+            while ApplicationDocument.objects.filter(application=self.application, document_name=new_name).exists():
+                new_name = f"{base_name}_{count}"
+                count += 1
 
-    def __str__(self):
-        return f"{self.household_member.full_name} - {self.get_document_type_display()}"
+            self.document_name = new_name  # Set unique document name
+
+        super().save(*args, **kwargs)
