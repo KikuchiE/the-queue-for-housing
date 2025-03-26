@@ -1,11 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.http import require_POST
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .forms import ApplicantDataForm, FamilyDataForm
 from django.shortcuts import render
 from .models import Application, ApplicationHistory, ApplicationDocument
-from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.contrib import messages
+from users.models import User
+from .forms import ApplicantDataForm, FamilyDataForm, ApplicationSubmissionForm, QueueCheckForm, QueueSearchForm,save_application_with_documents
+from django.db.models import Window, F
+from django.db.models.functions import RowNumber
+
 
 # Create your views here.
 def home(request):
@@ -14,30 +19,67 @@ def home(request):
 def statistics(request):
     return render(request, 'statistics.html')
 
-def check_queue(request):
-    return render(request, 'check_queue.html')
-
-def list_queue(request):
-    return render(request, 'list_queue.html')
+def check_queue_number(request):
+    if request.method == 'POST':
+        form = QueueCheckForm(request.POST)
+        if form.is_valid():
+            iin = form.cleaned_data['iin']
+            
+            try:
+                # Find the user with the given IIN
+                user = User.objects.get(iin=iin)
+                
+                # Find all applications for this user
+                applications = Application.objects.filter(
+                    applicant=user, 
+                    status__in=['SUBMITTED', 'UNDER_REVIEW', 'IN_QUEUE']
+                ).order_by('submission_date')
+                
+                if applications.exists():
+                    # Get all applications in the same statuses, ordered by priority score
+                    all_queued_applications = Application.objects.filter(
+                        status__in=['SUBMITTED', 'UNDER_REVIEW', 'IN_QUEUE']
+                    ).order_by('-priority_score', 'submission_date')
+                    
+                    # Calculate queue position
+                    queue_position = list(all_queued_applications).index(applications.first()) + 1
+                    
+                    context = {
+                        'form': form,
+                        'applications': applications,
+                        'queue_position': queue_position,
+                        'total_queued_applications': all_queued_applications.count()
+                    }
+                    return render(request, 'queue_check_result.html', context)
+                else:
+                    messages.warning(request, 'No active applications found for this IIN.')
+                    return render(request, 'check_queue.html', {'form': form})
+            
+            except User.DoesNotExist:
+                messages.error(request, 'No user found with this IIN.')
+                return render(request, 'check_queue.html', {'form': form})
+    
+    else:
+        form = QueueCheckForm()
+    
+    return render(request, 'check_queue.html', {'form': form})
 
 def my_applications(request):
-    return render(request, 'my_applications.html')
-
-# def create_application(request):
-#     return render(request, 'create_application.html')
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .models import Application, ApplicationHistory
-from .forms import ApplicantDataForm, FamilyDataForm, ApplicationSubmissionForm, save_application_with_documents
+    applications = Application.objects.filter(applicant=request.user).order_by('-submission_date')
+    
+    # Pagination
+    paginator = Paginator(applications, 10)  # Show 10 applications per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'my_applications.html', {
+        'applications': page_obj,
+        'applications_count': paginator.count,
+    })
 
 @login_required
 def create_application(request):
     """View to create a new application"""
-    # Check if user already has an application
-    # existing_application = Application.objects.filter(applicant=request.user).first()
-    
     if request.method == 'POST':
         applicant_form = ApplicantDataForm(request.POST)
         family_form = FamilyDataForm(request.POST, request.FILES)
@@ -68,25 +110,14 @@ def create_application(request):
             # Forms have errors
             messages.error(request, 'Please correct the errors in the form.')
     else:
-        # Initialize forms
-        initial_data = {}
-        # if existing_application:
-        #     # Prefill form with existing data
-        #     initial_data = {
-        #         field: getattr(existing_application, field)
-        #         for field in ApplicantDataForm.Meta.fields + FamilyDataForm.Meta.fields
-        #         if hasattr(existing_application, field)
-        #     }
-            
-        applicant_form = ApplicantDataForm(initial=initial_data)
-        family_form = FamilyDataForm(initial=initial_data)
+        applicant_form = ApplicantDataForm()
+        family_form = FamilyDataForm()
         submission_form = ApplicationSubmissionForm()
     
     context = {
         'applicant_form': applicant_form,
         'family_form': family_form,
         'submission_form': submission_form,
-        # 'existing_application': existing_application,
     }
     
     return render(request, 'create_application.html', context)
@@ -126,6 +157,7 @@ def view_application(request, application_id):
     # Format application data for response
     application_data = {
         'id': application.id,
+        'is_for_ward': application.is_for_ward,
         'application_number': application.application_number,
         'status': application.get_status_display(),
         'priority_score': application.priority_score,
@@ -134,6 +166,7 @@ def view_application(request, application_id):
         'monthly_income': application.monthly_income,
         'children_count': application.children_count,
         'has_disability': application.has_disability,
+        'current_address': application.current_address,
         'current_living_area': application.current_living_area,
         'adults_count': application.adults_count,
         'elderly_count': application.elderly_count,
@@ -160,3 +193,50 @@ def view_application(request, application_id):
         'application': application_data,
         'history': history_data,
     })
+
+def queue_members(request):
+    # Initialize the search form
+    form = QueueSearchForm(request.GET or None)
+    
+    # Annotate queue number based on priority score ranking
+    queryset = Application.objects.filter(status='SUBMITTED').annotate(
+        queue_number=Window(
+            expression=RowNumber(),
+            order_by=F('priority_score').desc()
+        )
+    ).order_by('-priority_score')
+    
+    # Apply form filters if the form is valid
+    if form.is_valid():
+        iin = form.cleaned_data.get('iin')
+        queue_number_from = form.cleaned_data.get('queue_number_from')
+        queue_number_to = form.cleaned_data.get('queue_number_to')
+        
+        # Filter by IIN if provided
+        if iin:
+            queryset = queryset.filter(applicant__iin__icontains=iin)
+        
+        # Filter by queue number range if both from and to are provided
+        if queue_number_from is not None and queue_number_to is not None:
+            queryset = queryset.filter(
+                queue_number__gte=queue_number_from,
+                queue_number__lte=queue_number_to
+            )
+    
+    # Pagination
+    page = request.GET.get('page', 1)
+    paginator = Paginator(queryset, 10)  # 10 items per page
+    
+    try:
+        queue_members = paginator.page(page)
+    except PageNotAnInteger:
+        queue_members = paginator.page(1)
+    except EmptyPage:
+        queue_members = paginator.page(paginator.num_pages)
+    
+    context = {
+        'form': form,
+        'queue_members': queue_members,
+    }
+    
+    return render(request, 'queue_members.html', context)

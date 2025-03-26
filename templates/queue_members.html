@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mx-auto p-4 mt-10">
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h1 class="text-2xl font-semibold mb-4">Queue Members</h1>
+        <form method="get" class="grid grid-cols-1 gap-4 mb-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="{{ form.iin.id_for_label }}" class="block text-sm font-medium text-gray-700">IIN</label>
+                    {{ form.iin }}
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="{{ form.queue_number_from.id_for_label }}" class="block text-sm font-medium text-gray-700">Queue Number From</label>
+                    {{ form.queue_number_from }}
+                </div>
+                <div>
+                    <label for="{{ form.queue_number_to.id_for_label }}" class="block text-sm font-medium text-gray-700">Queue Number To</label>
+                    {{ form.queue_number_to }}
+                </div>
+            </div>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-search"></i>
+                Search
+            </button>
+        </form>
+    </div>
+    <div class="bg-white mt-6 p-6 rounded-lg shadow-lg">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Queue Number</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority Score</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">For a Ward</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Residence Condition</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for application in queue_members %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ application.queue_number }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ application.applicant.get_full_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ application.priority_score }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ application.is_for_ward|yesno:"Yes,No" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ application.get_current_residence_condition_display }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">No queue members found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if queue_members.paginator.num_pages > 1 %}
+        <div class="mt-4 flex justify-between items-center">
+            <div class="text-sm text-gray-700">
+                Showing {{ queue_members.start_index }} to {{ queue_members.end_index }} of {{ queue_members.paginator.count }} records
+            </div>
+			<div class="flex items-center space-x-2">
+				{% if queue_members.has_previous %}
+				<a href="?{% if request.GET.iin %}iin={{ request.GET.iin }}&{% endif %}{% if request.GET.queue_number_from %}queue_number_from={{ request.GET.queue_number_from }}&{% endif %}{% if request.GET.queue_number_to %}queue_number_to={{ request.GET.queue_number_to }}&{% endif %}page={{ queue_members.previous_page_number }}" class="px-3 py-1 border rounded">Previous</a>
+				{% endif %}
+				<span class="px-3 py-1">Page {{ queue_members.number }} of {{ queue_members.paginator.num_pages }}</span>
+				{% if queue_members.has_next %}
+				<a href="?{% if request.GET.iin %}iin={{ request.GET.iin }}&{% endif %}{% if request.GET.queue_number_from %}queue_number_from={{ request.GET.queue_number_from }}&{% endif %}{% if request.GET.queue_number_to %}queue_number_to={{ request.GET.queue_number_to }}&{% endif %}page={{ queue_members.next_page_number }}" class="px-3 py-1 border rounded">Next</a>
+				{% endif %}
+			</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

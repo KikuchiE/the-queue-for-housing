@@ -21,7 +21,7 @@ class SignupForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'class': style, 'placeholder': 'IIN'}),
         required=True
     )
-    phone = forms.CharField(
+    phone_number = forms.CharField(
         widget=forms.TextInput(attrs={'class': style, 'placeholder': 'Phone'}),
         required=True
     )
@@ -36,7 +36,7 @@ class SignupForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "iin", "phone"]
+        fields = ["first_name", "last_name", "email", "iin", "phone_number"]
 
     def clean(self):
         cleaned_data = super().clean()

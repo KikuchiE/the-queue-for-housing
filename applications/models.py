@@ -17,13 +17,14 @@ class Application(models.Model):
         # ('CANCELLED', 'Cancelled'),
         # ('EXPIRED', 'Expired'),
     ]
-    
+
     applicant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
+    is_for_ward = models.BooleanField(default=False)
     application_number = models.CharField(max_length=20, unique=True)
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='SUBMITTED')
     submission_date = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    
+
     # Current living conditions
     current_address = models.TextField()
     is_homeless = models.BooleanField(default=False)
@@ -33,7 +34,7 @@ class Application(models.Model):
         ('POOR', 'Poor'),
         ('UNSAFE', 'Unsafe'),
     ])
-    
+
     monthly_income = models.DecimalField(max_digits=10, decimal_places=2)
     current_living_area = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
@@ -117,6 +118,7 @@ class ApplicationHistory(models.Model):
 class ApplicationDocument(models.Model):
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='documents')
     document_type = models.CharField(max_length=50, choices=[
+        ('ID_PROOF', 'ID Proof'),
         ('INCOME_STATEMENT', 'Income Statement'),
         ('DISABILITY_CERTIFICATE', 'Disability Certificate'),
         ('VETERAN_STATUS', 'Veteran Status'),

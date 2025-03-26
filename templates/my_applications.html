@@ -5,42 +5,73 @@
 	</div>
 	<div class="bg-white p-6 rounded-lg shadow-md">
 		<div class="flex space-x-4 mb-4">
-			<a href="/my-application/create">
+			<a href="{% url 'applications:create-application' %}" class="block">
 				<button class="bg-green-500 text-white px-4 py-2 rounded">Submit Application for Queue Placement</button>
 			</a>
-			{% comment %}
-			<button class="bg-green-500 text-white px-4 py-2 rounded">Submit Application for Queue Replacement</button>
-			{% endcomment %}
 		</div>
 		<div class="overflow-x-auto">
 			<table class="min-w-full bg-white">
 				<thead>
 					<tr>
-						{% comment %} <th class="py-2 px-4 border-b">Actions</th> {% endcomment %}
 						<th class="py-2 px-4 border-b">Application Number</th>
 						<th class="py-2 px-4 border-b">Processing Status</th>
 						<th class="py-2 px-4 border-b">Application Type</th>
-						<th class="py-2 px-4 border-b">Queue List</th>
-						<th class="py-2 px-4 border-b">Queue Subcategory</th>
-						{% comment %} <th class="py-2 px-4 border-b">Creation Date</th> {% endcomment %}
+						<th class="py-2 px-4 border-b">Priority Score</th>
 						<th class="py-2 px-4 border-b">Submission Date</th>
-						<th class="py-2 px-4 border-b">Withdrawal Date</th>
-						{% comment %} <th class="py-2 px-4 border-b">Processing Date</th> {% endcomment %}
+						<th class="py-2 px-4 border-b">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
+					{% if applications %} {% for application in applications %}
 					<tr>
-						<td class="py-2 px-4 border-b text-center" colspan="12">No records</td>
+						<td class="py-2 px-4 border-b">{{ application.application_number }}</td>
+						<td class="py-2 px-4 border-b">
+							{% if application.status == 'SUBMITTED' %}
+							<span class="text-yellow-600">Submitted</span>
+							{% elif application.status == 'UNDER_REVIEW' %}
+							<span class="text-blue-600">Under Review</span>
+							{% elif application.status == 'IN_QUEUE' %}
+							<span class="text-green-600">In Queue</span>
+							{% elif application.status == 'HOUSING_OFFERED' %}
+							<span class="text-green-800">Housing Offered</span>
+							{% elif application.status == 'ACCEPTED' %}
+							<span class="text-green-800">Accepted</span>
+							{% elif application.status == 'REJECTED_BY_APPLICANT' or application.status == 'REJECTED_BY_MANAGER' %}
+							<span class="text-red-600">Rejected</span>
+							{% else %} {{ application.status }} {% endif %}
+						</td>
+						<td class="py-2 px-4 border-b">
+							{{ application.is_for_ward|yesno:"Ward Application,Personal Application" }}
+						</td>
+						<td class="py-2 px-4 border-b">{{ application.priority_score }}</td>
+						<td class="py-2 px-4 border-b">{{ application.submission_date|date:"d M Y" }}</td>
+						<td class="py-2 px-4 border-b">
+							<div class="flex space-x-2">
+								<a href="{% url 'applications:view-application' application.id %}" class="text-blue-500 hover:underline">View</a>
+								{% if application.status == 'SUBMITTED' or application.status == 'UNDER_REVIEW' %}
+								{% comment %} <a href="{% url 'applications:edit-application' application.id %}" class="text-yellow-500 hover:underline">Edit</a> {% endcomment %}
+								{% endif %}
+							</div>
+						</td>
 					</tr>
+					{% endfor %} {% else %}
+					<tr>
+						<td class="py-2 px-4 border-b text-center" colspan="6">No applications submitted yet</td>
+					</tr>
+					{% endif %}
 				</tbody>
 			</table>
 		</div>
 		<div class="flex justify-between items-center mt-4">
-			<span>Total records: 0</span>
+			<span>Total records: {{ applications_count }}</span>
 			<div class="flex items-center space-x-2">
-				<button class="px-3 py-1 border rounded">1</button>
-				<button class="px-3 py-1 border rounded"><i class="fas fa-th"></i></button>
-				<button class="px-3 py-1 border rounded"><i class="fas fa-list"></i></button>
+				{% if applications.has_previous %}
+				<a href="?page={{ applications.previous_page_number }}" class="px-3 py-1 border rounded">Previous</a>
+				{% endif %}
+				<span class="px-3 py-1">Page {{ applications.number }} of {{ applications.paginator.num_pages }}</span>
+				{% if applications.has_next %}
+				<a href="?page={{ applications.next_page_number }}" class="px-3 py-1 border rounded">Next</a>
+				{% endif %}
 			</div>
 		</div>
 	</div>

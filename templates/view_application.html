@@ -23,15 +23,19 @@
 						<span class="font-bold">{{ application.application_number }}</span>
 					</div>
 					<div class="flex justify-between">
+						<span class="font-medium text-gray-600">Who is it intended for:</span>
+						<span class="font-bold">{% if application.is_for_ward %} For a ward {% else %} For myself {% endif %}</span>
+					</div>
+					<div class="flex justify-between">
 						<span class="font-medium text-gray-600">Submission Date:</span>
-						<span>{{ application.submission_date|date:"D, d M Y" }}</span>
+						<span>{{ application.submission_date }}</span>
 					</div>
 					<div class="flex justify-between">
 						<span class="font-medium text-gray-600">Current Status:</span>
 						<span
 							class="{% if application.status == 'SUBMITTED' %}text-blue-600 {% elif application.status == 'UNDER_REVIEW' %}text-yellow-600 {% elif application.status == 'IN_QUEUE' %}text-orange-600 {% elif application.status == 'HOUSING_OFFERED' %}text-green-600 {% elif application.status == 'ACCEPTED' %}text-green-800 {% else %}text-red-600 {% endif %} font-bold"
 						>
-							{{ application.get_status_display }}
+							{{ application.status }}
 						</span>
 					</div>
 					<div class="flex justify-between">

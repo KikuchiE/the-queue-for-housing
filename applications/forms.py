@@ -1,54 +1,54 @@
-from django import forms
-from .models import Application, ApplicationDocument
+# from django import forms
+# from .models import Application, ApplicationDocument
 
-class ApplicantDataForm(forms.ModelForm):
-    class Meta:
-        model = Application
-        fields = [
-            'current_residence_condition', 
-            'monthly_income', 
-            'current_living_area', 
-            'current_address', 
-            'is_homeless'
-        ]
-        widgets = {
-            'current_address': forms.Textarea(attrs={'rows': 3, 'class': 'w-full p-2 border rounded'}),
-            'current_residence_condition': forms.Select(attrs={'class': 'w-full p-2 border rounded'}),
-            'monthly_income': forms.NumberInput(attrs={'class': 'w-full p-2 border rounded', 'step': '0.01'}),
-            'current_living_area': forms.NumberInput(attrs={'class': 'w-full p-2 border rounded', 'step': '0.01'}),
-            'is_homeless': forms.CheckboxInput(attrs={'class': 'mr-2'}),
-        }
+# class ApplicantDataForm(forms.ModelForm):
+#     class Meta:
+#         model = Application
+#         fields = [
+#             'current_residence_condition', 
+#             'monthly_income', 
+#             'current_living_area', 
+#             'current_address', 
+#             'is_homeless'
+#         ]
+#         widgets = {
+#             'current_address': forms.Textarea(attrs={'rows': 3, 'class': 'w-full p-2 border rounded'}),
+#             'current_residence_condition': forms.Select(attrs={'class': 'w-full p-2 border rounded'}),
+#             'monthly_income': forms.NumberInput(attrs={'class': 'w-full p-2 border rounded', 'step': '0.01'}),
+#             'current_living_area': forms.NumberInput(attrs={'class': 'w-full p-2 border rounded', 'step': '0.01'}),
+#             'is_homeless': forms.CheckboxInput(attrs={'class': 'mr-2'}),
+#         }
 
-class FamilyDataForm(forms.ModelForm):
-    applicant_disability = forms.FileField(
-        required=False,
-        widget=forms.FileInput(attrs={'class': 'p-2 border rounded w-full'})
-    )
+# class FamilyDataForm(forms.ModelForm):
+#     applicant_disability = forms.FileField(
+#         required=False,
+#         widget=forms.FileInput(attrs={'class': 'p-2 border rounded w-full'})
+#     )
 
-    class Meta:
-        model = Application
-        fields = ['is_single_parent', 'is_veteran', 'has_disability', 'adults_count', 'children_count', 'elderly_count']
-        widgets = {
-            'is_single_parent': forms.CheckboxInput(attrs={'class': 'mr-2'}),
-            'is_veteran': forms.CheckboxInput(attrs={'class': 'mr-2'}),
-            'has_disability': forms.CheckboxInput(attrs={'class': 'mr-2'}),
-            'adults_count': forms.NumberInput(attrs={'class': 'w-full p-2 border rounded'}),
-            'children_count': forms.NumberInput(attrs={'class': 'w-full p-2 border rounded'}),
-            'elderly_count': forms.NumberInput(attrs={'class': 'w-full p-2 border rounded'}),
-        }
+#     class Meta:
+#         model = Application
+#         fields = ['is_single_parent', 'is_veteran', 'has_disability', 'adults_count', 'children_count', 'elderly_count']
+#         widgets = {
+#             'is_single_parent': forms.CheckboxInput(attrs={'class': 'mr-2'}),
+#             'is_veteran': forms.CheckboxInput(attrs={'class': 'mr-2'}),
+#             'has_disability': forms.CheckboxInput(attrs={'class': 'mr-2'}),
+#             'adults_count': forms.NumberInput(attrs={'class': 'w-full p-2 border rounded'}),
+#             'children_count': forms.NumberInput(attrs={'class': 'w-full p-2 border rounded'}),
+#             'elderly_count': forms.NumberInput(attrs={'class': 'w-full p-2 border rounded'}),
+#         }
     
-    def save(self, commit=True):
-        instance = super().save(commit=commit)
+#     def save(self, commit=True):
+#         instance = super().save(commit=commit)
         
-        # Handle disability document upload if needed
-        if self.cleaned_data.get('applicant_disability') and instance.has_disability:
-            ApplicationDocument.objects.create(
-                application=instance,
-                document_type='DISABILITY_CERTIFICATE',
-                file=self.cleaned_data['applicant_disability']
-            )
+#         # Handle disability document upload if needed
+#         if self.cleaned_data.get('applicant_disability') and instance.has_disability:
+#             ApplicationDocument.objects.create(
+#                 application=instance,
+#                 document_type='DISABILITY_CERTIFICATE',
+#                 file=self.cleaned_data['applicant_disability']
+#             )
         
-        return instance
+#         return instance
     
     
     
@@ -59,9 +59,20 @@ from .models import Application, ApplicationDocument
 
 class ApplicantDataForm(forms.ModelForm):
     """Form for basic applicant data"""
+    APPLICANT_CHOICES = [
+        (False, 'На себя'),  # Applying for themselves
+        (True, 'За опекаемого'),  # Applying for a dependent
+    ]
+
+    is_for_ward = forms.ChoiceField(
+        choices=APPLICANT_CHOICES,
+        widget=forms.RadioSelect(attrs={'class': 'hidden'}),
+        required=True
+    )
     class Meta:
         model = Application
         fields = [
+            'is_for_ward',
             'current_residence_condition',
             'monthly_income',
             'current_living_area',
@@ -82,6 +93,7 @@ class FamilyDataForm(forms.ModelForm):
     is_single_parent_document = forms.FileField(required=False, widget=forms.FileInput(attrs={'class': 'w-full p-2 border rounded'}))
     is_veteran_document = forms.FileField(required=False, widget=forms.FileInput(attrs={'class': 'w-full p-2 border rounded'}))
     disability_document = forms.FileField(required=False, widget=forms.FileInput(attrs={'class': 'w-full p-2 border rounded'}))
+    id_proof_document = forms.FileField(required=True, widget=forms.FileInput(attrs={'class': 'w-full p-2 border rounded'}))
     
     class Meta:
         model = Application
@@ -129,7 +141,13 @@ def save_application_with_documents(applicant_form, family_form, submission_form
     
     # Save documents if provided
     documents_to_save = []
-    
+
+    if family_form.cleaned_data.get('id_proof_document'):
+        documents_to_save.append({
+            'document_type': 'ID_PROOF',
+            'file': family_form.cleaned_data['id_proof_document']
+        })
+
     if family_form.cleaned_data.get('is_single_parent') and family_form.cleaned_data.get('is_single_parent_document'):
         documents_to_save.append({
             'document_type': 'SINGLE_PARENT_PROOF',
@@ -161,3 +179,52 @@ def save_application_with_documents(applicant_form, family_form, submission_form
     application.calculate_priority()
     
     return application
+
+
+class QueueCheckForm(forms.Form):
+    iin = forms.CharField(
+        label='Individual Identification Number (IIN)',
+        max_length=12,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full border border-gray-300 rounded-lg p-2 mb-4',
+            'placeholder': 'Enter your IIN'
+        })
+    )
+
+    def clean_iin(self):
+        iin = self.cleaned_data['iin']
+        
+        # Validate IIN format (basic validation)
+        if not iin.isdigit():
+            raise forms.ValidationError("IIN must contain only digits")
+        
+        if len(iin) != 12:
+            raise forms.ValidationError("IIN must be exactly 12 digits")
+        
+        return iin
+
+class QueueSearchForm(forms.Form):
+    iin = forms.CharField(
+        required=False,
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm',
+            'placeholder': 'Enter IIN'
+        })
+    )
+    queue_number_from = forms.IntegerField(
+        required=False,
+        initial=1,
+        widget=forms.NumberInput(attrs={
+            'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm',
+            'placeholder': 'From'
+        })
+    )
+    queue_number_to = forms.IntegerField(
+        required=False,
+        initial=100,
+        widget=forms.NumberInput(attrs={
+            'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm',
+            'placeholder': 'To'
+        })
+    )
