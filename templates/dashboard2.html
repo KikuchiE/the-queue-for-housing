@@ -1,11 +1,7 @@
 {% extends "base.html" %} {% block content %}
 <div class="container mx-auto p-4">
-	<div class="flex justify-between items-center mb-4">
+	<div class="flex mt-10 justify-between items-center mb-4">
 		<h1 class="text-xl font-bold">Application Management</h1>
-		<div>
-			<a href="#" class="text-blue-500 mr-4">Home</a>
-			<a href="#" class="text-gray-500">Admin Panel</a>
-		</div>
 	</div>
 
 	<!-- Application Search and Filter -->
@@ -34,15 +30,6 @@
 					<option value="EXPIRED">Expired</option>
 				</select>
 			</div>
-			{% comment %}
-			<div>
-				<label class="block text-gray-700">Submission Date</label>
-				<div class="flex space-x-2">
-					<input type="date" class="w-1/2 p-2 border border-gray-300 rounded mt-1" />
-					<input type="date" class="w-1/2 p-2 border border-gray-300 rounded mt-1" />
-				</div>
-			</div>
-			{% endcomment %}
 		</div>
 		<div class="flex space-x-4">
 			<button class="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
@@ -333,91 +320,12 @@
 		document.getElementById("applicationModal").classList.remove("hidden");
 
 		// Fetch application details
-		fetch(`/api/applications/${applicationId}/`)
-			.then((response) => response.json())
-			.then((data) => {
-				// Set hidden input field values
-				document.getElementById("application-id").value = data.id;
-				document.getElementById("allocation-application-id").value = data.id;
-
-				// Fill in application details
-				document.getElementById("app-number").textContent = data.application_number;
-				document.getElementById("app-name").textContent = `${data.applicant.first_name} ${data.applicant.last_name}`;
-				document.getElementById("app-status").textContent = data.get_status_display;
-				document.getElementById("app-date").textContent = new Date(data.submission_date).toLocaleDateString();
-				document.getElementById("app-score").textContent = data.priority_score;
-				document.getElementById("app-position").textContent = data.queue_position || "-";
-
-				// Household information
-				document.getElementById("app-income").textContent = data.monthly_income.toLocaleString();
-				document.getElementById("app-address").textContent = data.current_address;
-				document.getElementById("app-area").textContent = data.current_living_area || "-";
-				document.getElementById("app-adults").textContent = data.adults_count;
-				document.getElementById("app-children").textContent = data.children_count;
-				document.getElementById("app-elderly").textContent = data.elderly_count;
-
-				// Special conditions
-				document.getElementById("app-veteran").textContent = data.is_veteran ? "Yes" : "No";
-				document.getElementById("app-single-parent").textContent = data.is_single_parent ? "Yes" : "No";
-				document.getElementById("app-disability").textContent = data.has_disability ? "Yes" : "No";
-				document.getElementById("app-disability-details").textContent = data.disability_details || "-";
-				document.getElementById("app-waiting").textContent = data.waiting_years;
-
-				// Show or hide housing allocation section based on status
-				const housingSection = document.getElementById("housing-allocation-section");
-				if (data.status === "VERIFIED" || data.status === "IN_QUEUE") {
-					housingSection.style.display = "block";
-				} else {
-					housingSection.style.display = "none";
-				}
-
-				// Load application history
-				loadApplicationHistory(applicationId);
-			})
-			.catch((error) => {
-				console.error("Error fetching application details:", error);
-				alert("Error loading application details. Please try again.");
-			});
 	}
 
 	function loadApplicationHistory(applicationId) {
 		const historyList = document.getElementById("history-list");
 		historyList.innerHTML = '<p class="p-4 text-center">Loading history...</p>';
 
-		fetch(`/api/applications/${applicationId}/history/`)
-			.then((response) => response.json())
-			.then((history) => {
-				if (history.length === 0) {
-					historyList.innerHTML = '<p class="p-4 text-center">No history records found</p>';
-					return;
-				}
-
-				let historyHTML = "";
-				history.forEach((item) => {
-					historyHTML += `
-                    <div class="border-b p-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-medium">${item.previous_status} → ${item.new_status}</p>
-                                <p class="text-sm text-gray-600">Changed by: ${item.changed_by_name}</p>
-                            </div>
-                            <p class="text-sm text-gray-500">${new Date(item.change_date).toLocaleString()}</p>
-                        </div>
-                        ${item.notes ? `<p class="mt-2 text-sm">${item.notes}</p>` : ""}
-                        ${
-													item.rejection_reason
-														? `<p class="mt-2 text-sm text-red-600">Rejection reason: ${item.rejection_reason}</p>`
-														: ""
-												}
-                    </div>`;
-				});
-
-				historyList.innerHTML = historyHTML;
-			})
-			.catch((error) => {
-				console.error("Error fetching application history:", error);
-				historyList.innerHTML = '<p class="p-4 text-center text-red-500">Error loading history</p>';
-			});
 	}
 
 	// Form submission handlers
