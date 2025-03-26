@@ -22,7 +22,7 @@ A housing waiting list system with automatic priority calculation. Automates the
 
 1. Clone the repository:
     ```bash
-    git clone git@github.com:KorlanE/the-queue-for-housing.git
+    git clone https://github.com/KikuchiE/the-queue-for-housing.git
     ```
 2. Navigate to the project directory:
     ```bash
