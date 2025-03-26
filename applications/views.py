@@ -4,7 +4,7 @@ from .forms import ApplicantDataForm, FamilyDataForm
 from django.shortcuts import render
 from .models import Application, ApplicationHistory, ApplicationDocument
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import Http404
 from django.contrib import messages
 from users.models import User
 from .forms import ApplicantDataForm, FamilyDataForm, ApplicationSubmissionForm, QueueCheckForm, QueueSearchForm,save_application_with_documents
@@ -154,8 +154,12 @@ def get_application_data(request):
 # View application details
 @login_required
 def view_application(request, application_id):
-    application = get_object_or_404(Application, id=application_id, applicant=request.user)
-    
+    application = get_object_or_404(Application, id=application_id)
+    current_user = User.objects.get(email=request.user.email)
+
+    if (application.applicant != request.user) and not (current_user.is_administrator or current_user.is_staff):
+        raise Http404("This page doesn't exist")
+
     # Format application data for response
     application_data = {
         'id': application.id,
@@ -176,18 +180,7 @@ def view_application(request, application_id):
         'is_single_parent': application.is_single_parent,
         'waiting_years': application.waiting_years,
         'document_verified': application.document_verified,
-        # 'documents': [doc.file.url for doc in application.documents.all()],
-        'documents': application.documents.all(),
-        # 'documents': [
-        #     {
-        #         'file_url': doc.file.url,
-        #         'document_type': doc.get_document_type_display(),
-        #         'document_name': doc.document.name,
-        #         'uploaded_at': doc.uploaded_at.strftime('%d %b %Y %H:%M'),
-        #     }
-        #     for doc in application.documents.all()
-        #         ],
-        
+        'documents': application.documents.all(),        
         'has_documents': application.documents.exists(),
     }
 
