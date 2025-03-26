@@ -150,6 +150,8 @@ def get_application_data(request):
     }
     
     return render(request, 'view_application.html', context)
+
+# View application details
 @login_required
 def view_application(request, application_id):
     application = get_object_or_404(Application, id=application_id, applicant=request.user)
@@ -174,7 +176,19 @@ def view_application(request, application_id):
         'is_single_parent': application.is_single_parent,
         'waiting_years': application.waiting_years,
         'document_verified': application.document_verified,
-        'documents': [doc.file.url for doc in application.documents.all()],
+        # 'documents': [doc.file.url for doc in application.documents.all()],
+        'documents': application.documents.all(),
+        # 'documents': [
+        #     {
+        #         'file_url': doc.file.url,
+        #         'document_type': doc.get_document_type_display(),
+        #         'document_name': doc.document.name,
+        #         'uploaded_at': doc.uploaded_at.strftime('%d %b %Y %H:%M'),
+        #     }
+        #     for doc in application.documents.all()
+        #         ],
+        
+        'has_documents': application.documents.exists(),
     }
 
     # Get history data

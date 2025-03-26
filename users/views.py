@@ -49,13 +49,12 @@ def logout_view(request):
 
 @login_required
 def update_profile(request):
-    """
-    View for handling profile updates
-    """
     if request.method == 'POST':
         user = request.user
         
         # Update user fields
+        user.iin = request.POST.get('iin')
+        user.email = request.POST.get('email')
         user.first_name = request.POST.get('first_name')
         user.last_name = request.POST.get('last_name')
         user.phone_number = request.POST.get('phone_number')

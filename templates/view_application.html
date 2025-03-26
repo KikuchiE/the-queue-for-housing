@@ -119,11 +119,11 @@
 			<h2 class="text-xl font-semibold mb-4 border-b pb-2">Uploaded Documents</h2>
 			{% if application.documents.exists %}
 			<div class="grid md:grid-cols-2 gap-4">
-				{% for doc in application.documents.all %}
+				{% for doc in application.documents %}
 				<div class="bg-white p-3 rounded shadow-sm">
 					<div class="flex justify-between items-center">
-						<span class="font-medium text-gray-600">{{ doc.get_document_type_display }}</span>
 						<a href="{{ doc.file.url }}" target="_blank" class="text-blue-500 hover:text-blue-700 transition">
+							<span class="font-medium text-gray-600">{{ doc.document_name }}</span>
 							View Document
 						</a>
 					</div>

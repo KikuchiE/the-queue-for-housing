@@ -1,279 +1,280 @@
-{% extends "base.html" %}
-{% block content %}
-{% load static %}
+{% extends "base.html" %} {% block content %} {% load static %}
 
 <div class="container mx-auto p-4 mt-10">
-    <div class="bg-white p-4 rounded shadow">
-        <h1 class="text-lg font-semibold mb-4">Operations by Applicant</h1>
-        
-        <!-- Navigation Buttons -->
-        <div class="flex flex-wrap space-x-2 mb-4">
-            <button class="nav-button bg-blue-500 text-white py-2 px-4 rounded" data-section="applicant-type">
+	<div class="bg-white p-4 rounded shadow">
+		<h1 class="text-lg font-semibold mb-4">Operations by Applicant</h1>
+
+		<!-- Navigation Buttons -->
+		<div class="flex flex-wrap space-x-2 mb-4">
+			<button class="nav-button bg-blue-500 text-white py-2 px-4 rounded" data-section="applicant-type">
 				Whom to apply to
 			</button>
-            <button class="nav-button bg-gray-200 text-gray-700 py-2 px-4 rounded" data-section="applicant-data">
-                Applicant Data
-            </button>
-            <button class="nav-button bg-gray-200 text-gray-700 py-2 px-4 rounded" data-section="family-data">
-                Family Members Information
-            </button>
-            <button class="nav-button bg-gray-200 text-gray-700 py-2 px-4 rounded" data-section="application-submission">
-                Application Submission
-            </button>
-        </div>
+			<button class="nav-button bg-gray-200 text-gray-700 py-2 px-4 rounded" data-section="applicant-data">
+				Applicant Data
+			</button>
+			<button class="nav-button bg-gray-200 text-gray-700 py-2 px-4 rounded" data-section="family-data">
+				Family Members Information
+			</button>
+			<button class="nav-button bg-gray-200 text-gray-700 py-2 px-4 rounded" data-section="application-submission">
+				Application Submission
+			</button>
+		</div>
 
-        <form method="post" enctype="multipart/form-data" id="application-form">
-            {% csrf_token %}
-            
-            <!-- Form Sections -->
-            <div id="form-sections">
-                <!-- Section 1: Applicant Type -->
-                <div id="applicant-type" class="form-section active">
-                    <div class="flex justify-center space-x-8 mb-4">
-                        {% for value, label in applicant_form.is_for_ward.field.choices %}
-                        <label
-                        class="bg-white p-8 rounded shadow w-1/3 text-center cursor-pointer hover:border-blue-300 hover:border-2"
-                    >
-                        <input type="radio" name="{{ applicant_form.is_for_ward.name }}" value="{{ value }}" class="hidden" />
-                        {% if value == "False" %}
-                            <i class="fas fa-user text-4xl text-gray-400 mb-4"></i>
-                            <p class="text-gray-500">{{ label }}</p>
-                        {% else %}
-                            <i class="fas fa-user text-4xl text-gray-400 mb-4"></i>
-                            <p class="text-black">{{ label }}</p>
-                            <p class="text-gray-500">(недееспособного, ребенка и др.)</p>
-                        {% endif %}
-                    </label>
-                        {% endfor %}
-                    </div>
-                </div>                <!-- Section 2: Applicant Data -->
-                <div id="applicant-data" class="form-section hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div class="form-group">
-                            <label class="block text-gray-700 mb-2">Full Name</label>
-                            <input
-                                type="text"
-                                class="w-full p-2 border rounded"
-                                value="{{ user.first_name }} {{ user.last_name }}"
-                                disabled
-                            />
-                        </div>
-                        <div class="form-group">
-                            <label class="block text-gray-700 mb-2">Условия текущего проживания</label>
-                            {{ applicant_form.current_residence_condition }}
-                        </div>
-                        <div class="form-group">
-                            <label class="block text-gray-700 mb-2">Ежемесячный доход</label>
-                            {{ applicant_form.monthly_income }}
-                        </div>
-                        <div class="form-group">
-                            <label class="block text-gray-700 mb-2">Площадь текущего жилья (м²)</label>
-                            {{ applicant_form.current_living_area }}
-                        </div>
-                        <div class="form-group">
-                            <label class="block text-gray-700 mb-2">Текущий адрес</label>
-                            {{ applicant_form.current_address }}
-                        </div>
-                        <div class="form-group">
-                            <label class="flex items-center">
-                                {{ applicant_form.is_homeless }}
-                                <span>Отсутствие постоянного жилья</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
+		<form method="post" enctype="multipart/form-data" id="application-form">
+			{% csrf_token %}
 
-                <!-- Section 3: Family Data -->
-                <div id="family-data" class="form-section hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div class="form-group">
-                            <label class="block text-gray-700 mb-2">Количество взрослых</label>
-                            {{ family_form.adults_count }}
-                        </div>
-                        <div class="form-group">
-                            <label class="block text-gray-700 mb-2">Количество детей</label>
-                            {{ family_form.children_count }}
-                        </div>
-                        <div class="form-group">
-                            <label class="block text-gray-700 mb-2">Количество пожилых</label>
-                            {{ family_form.elderly_count }}
-                        </div>
-                        
-                        <div class="form-group col-span-1 md:col-span-2">
-                            <div class="border p-3 rounded mb-2">
-                                <label class="flex items-center mb-2">
-                                    {% comment %} {{ family_form.is_single_parent }} {% endcomment %}
-                                    <span>ID Card</span>
-                                </label>
-                                <div class="document-upload-field ml-6" id="">
-                                    <label class="block text-gray-700 mb-1">Загрузить удостоверение личности</label>
-                                    {{ family_form.id_proof_document }}
-                                </div>
-                            </div>
-                        </div>
+			<!-- Form Sections -->
+			<div id="form-sections">
+				<!-- Section 1: Applicant Type -->
+				<div id="applicant-type" class="form-section active">
+					<div class="flex justify-center space-x-8 mb-4">
+						{% for value, label in applicant_form.is_for_ward.field.choices %}
+						<label
+							class="bg-white p-8 rounded shadow w-1/3 text-center cursor-pointer hover:border-blue-300 hover:border-2"
+						>
+							<input type="radio" name="{{ applicant_form.is_for_ward.name }}" value="{{ value }}" class="hidden" />
+							{% if value == "False" %}
+							<i class="fas fa-user text-4xl text-gray-400 mb-4"></i>
+							<p class="text-gray-500">{{ label }}</p>
+							{% else %}
+							<i class="fas fa-user text-4xl text-gray-400 mb-4"></i>
+							<p class="text-black">{{ label }}</p>
+							<p class="text-gray-500">(недееспособного, ребенка и др.)</p>
+							{% endif %}
+						</label>
+						{% endfor %}
+					</div>
+				</div>
+				<!-- Section 2: Applicant Data -->
+				<div id="applicant-data" class="form-section hidden">
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+						<div class="form-group">
+							<label class="block text-gray-700 mb-2">Full Name</label>
+							<input
+								type="text"
+								class="w-full p-2 border rounded"
+								value="{{ user.first_name }} {{ user.last_name }}"
+								disabled
+							/>
+						</div>
+						<div class="form-group">
+							<label class="block text-gray-700 mb-2">Условия текущего проживания</label>
+							{{ applicant_form.current_residence_condition }}
+						</div>
+						<div class="form-group">
+							<label class="block text-gray-700 mb-2">Ежемесячный доход</label>
+							{{ applicant_form.monthly_income }}
+						</div>
+						<div class="form-group">
+							<label class="block text-gray-700 mb-2">Площадь текущего жилья (м²)</label>
+							{{ applicant_form.current_living_area }}
+						</div>
+						<div class="form-group">
+							<label class="block text-gray-700 mb-2">Текущий адрес</label>
+							{{ applicant_form.current_address }}
+						</div>
+						<div class="form-group">
+							<label class="flex items-center">
+								{{ applicant_form.is_homeless }}
+								<span>Отсутствие постоянного жилья</span>
+							</label>
+						</div>
+					</div>
+				</div>
 
-                        <div class="form-group col-span-1 md:col-span-2">
-                            <div class="border p-3 rounded mb-2">
-                                <label class="flex items-center mb-2">
-                                    {{ family_form.is_single_parent }}
-                                    <span>Родитель-одиночка</span>
-                                </label>
-                                <div class="document-upload-field ml-6" id="single-parent-document-div">
-                                    <label class="block text-gray-700 mb-1">Загрузить подтверждающий документ</label>
-                                    {{ family_form.is_single_parent_document }}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group col-span-1 md:col-span-2">
-                            <div class="border p-3 rounded mb-2">
-                                <label class="flex items-center mb-2">
-                                    {{ family_form.is_veteran }}
-                                    <span>Ветеран</span>
-                                </label>
-                                <div class="document-upload-field ml-6" id="veteran-document-div">
-                                    <label class="block text-gray-700 mb-1">Загрузить удостоверение ветерана</label>
-                                    {{ family_form.is_veteran_document }}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group col-span-1 md:col-span-2">
-                            <div class="border p-3 rounded mb-2">
-                                <label class="flex items-center mb-2">
-                                    {{ family_form.has_disability }}
-                                    <span>Наличие инвалидности</span>
-                                </label>
-                                <div class="document-upload-field ml-6" id="disability-document-div">
-                                    <label class="block text-gray-700 mb-1">Загрузить документ об инвалидности</label>
-                                    {{ family_form.disability_document }}
-                                </div>
-                                <div class="ml-6 mt-2" id="disability-details-div">
-                                    <label class="block text-gray-700 mb-1">Детали инвалидности</label>
-                                    {{ family_form.disability_details }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+				<!-- Section 3: Family Data -->
+				<div id="family-data" class="form-section hidden">
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+						<div class="form-group">
+							<label class="block text-gray-700 mb-2">Количество взрослых</label>
+							{{ family_form.adults_count }}
+						</div>
+						<div class="form-group">
+							<label class="block text-gray-700 mb-2">Количество детей</label>
+							{{ family_form.children_count }}
+						</div>
+						<div class="form-group">
+							<label class="block text-gray-700 mb-2">Количество пожилых</label>
+							{{ family_form.elderly_count }}
+						</div>
 
-                <!-- Section 4: Application Submission -->
-                <div id="application-submission" class="form-section hidden">
-                    <div class="border p-4 rounded mb-4">
-                        <h3 class="font-semibold mb-2">Application Overview</h3>
-                        <p class="mb-2">
-                            Application Number:
-                            <span id="summary-application-number">-</span>
-                        </p>
-                        <p class="mb-2">
-                            Status:
-                            <span id="summary-status">-</span>
-                        </p>
-                        <p class="mb-2">
-                            Priority Score:
-                            <span id="summary-priority-score">-</span>
-                        </p>
-                        <p class="mb-2">
-                            Queue Position:
-                            <span id="summary-queue-position">-</span>
-                        </p>
-                    </div>
+						<div class="form-group col-span-1 md:col-span-2">
+							<div class="border p-3 rounded mb-2">
+								<label class="flex items-center mb-2">
+									{% comment %} {{ family_form.is_single_parent }} {% endcomment %}
+									<span>ID Card</span>
+								</label>
+								<div class="document-upload-field ml-6" id="">
+									<label class="block text-gray-700 mb-1">Загрузить удостоверение личности</label>
+									{{ family_form.id_proof_document }}
+								</div>
+							</div>
+						</div>
 
-                    <div class="mb-4">
-                        <h3 class="font-semibold mb-2">Change History</h3>
-                        <table class="w-full border-collapse">
-                            <thead>
-                                <tr>
-                                    <th class="border p-2 text-left">Date</th>
-                                    <th class="border p-2 text-left">Previous Status</th>
-                                    <th class="border p-2 text-left">New Status</th>
-                                    <th class="border p-2 text-left">Modified By</th>
-                                </tr>
-                            </thead>
-                            <tbody id="history-table">
-                                <tr>
-                                    <td colspan="4" class="border p-2 text-center">No change history</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+						<div class="form-group col-span-1 md:col-span-2">
+							<div class="border p-3 rounded mb-2">
+								<label class="flex items-center mb-2">
+									{{ family_form.is_single_parent }}
+									<span>Родитель-одиночка</span>
+								</label>
+								<div class="document-upload-field ml-6" id="single-parent-document-div">
+									<label class="block text-gray-700 mb-1">Загрузить подтверждающий документ</label>
+									{{ family_form.is_single_parent_document }}
+								</div>
+							</div>
+						</div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 mb-2">Notes</label>
-                        {{ submission_form.notes }}
-                    </div>
+						<div class="form-group col-span-1 md:col-span-2">
+							<div class="border p-3 rounded mb-2">
+								<label class="flex items-center mb-2">
+									{{ family_form.is_veteran }}
+									<span>Ветеран</span>
+								</label>
+								<div class="document-upload-field ml-6" id="veteran-document-div">
+									<label class="block text-gray-700 mb-1">Загрузить удостоверение ветерана</label>
+									{{ family_form.is_veteran_document }}
+								</div>
+							</div>
+						</div>
 
-                    <div class="form-group">
-                        <label class="flex items-center">
-                            {{ submission_form.confirm_submission }}
-                            <span>I confirm that all provided information is accurate and complete</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
+						<div class="form-group col-span-1 md:col-span-2">
+							<div class="border p-3 rounded mb-2">
+								<label class="flex items-center mb-2">
+									{{ family_form.has_disability }}
+									<span>Наличие инвалидности</span>
+								</label>
+								<div class="document-upload-field ml-6" id="disability-document-div">
+									<label class="block text-gray-700 mb-1">Загрузить документ об инвалидности</label>
+									{{ family_form.disability_document }}
+								</div>
+								<div class="ml-6 mt-2" id="disability-details-div">
+									<label class="block text-gray-700 mb-1">Детали инвалидности</label>
+									{{ family_form.disability_details }}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 
-            <!-- Navigation Buttons -->
-            <div class="flex justify-between mt-4">
-                <button type="button" class="bg-gray-500 text-white py-2 px-4 rounded" id="cancel-button">Cancel</button>
-                <div class="space-x-4">
-                    <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded" id="prev-button">Back</button>
-                    <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded" id="next-button">Next</button>
-                    <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded hidden" id="submit-button">Submit Application</button>
-                </div>
-            </div>
-        </form>
-    </div>
+				<!-- Section 4: Application Submission -->
+				<div id="application-submission" class="form-section hidden">
+					<div class="border p-4 rounded mb-4">
+						<h3 class="font-semibold mb-2">Application Overview</h3>
+						<p class="mb-2">
+							Application Number:
+							<span id="summary-application-number">-</span>
+						</p>
+						<p class="mb-2">
+							Status:
+							<span id="summary-status">-</span>
+						</p>
+						<p class="mb-2">
+							Priority Score:
+							<span id="summary-priority-score">-</span>
+						</p>
+						<p class="mb-2">
+							Queue Position:
+							<span id="summary-queue-position">-</span>
+						</p>
+					</div>
+
+					<div class="mb-4">
+						<h3 class="font-semibold mb-2">Change History</h3>
+						<table class="w-full border-collapse">
+							<thead>
+								<tr>
+									<th class="border p-2 text-left">Date</th>
+									<th class="border p-2 text-left">Previous Status</th>
+									<th class="border p-2 text-left">New Status</th>
+									<th class="border p-2 text-left">Modified By</th>
+								</tr>
+							</thead>
+							<tbody id="history-table">
+								<tr>
+									<td colspan="4" class="border p-2 text-center">No change history</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="mb-4">
+						<label class="block text-gray-700 mb-2">Notes</label>
+						{{ submission_form.notes }}
+					</div>
+
+					<div class="form-group">
+						<label class="flex items-center">
+							{{ submission_form.confirm_submission }}
+							<span>I confirm that all provided information is accurate and complete</span>
+						</label>
+					</div>
+				</div>
+			</div>
+
+			<!-- Navigation Buttons -->
+			<div class="flex justify-between mt-4">
+				<button type="button" class="bg-gray-500 text-white py-2 px-4 rounded" id="cancel-button">Cancel</button>
+				<div class="space-x-4">
+					<button type="button" class="bg-blue-500 text-white py-2 px-4 rounded" id="prev-button">Back</button>
+					<button type="button" class="bg-blue-500 text-white py-2 px-4 rounded" id="next-button">Next</button>
+					<button type="submit" class="bg-green-500 text-white py-2 px-4 rounded hidden" id="submit-button">
+						Submit Application
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle document upload fields visibility
-    const toggleDocumentField = function(checkboxId, documentDivId) {
-        const checkbox = document.getElementById(checkboxId);
-        const documentDiv = document.getElementById(documentDivId);
-        
-        if (checkbox && documentDiv) {
-            documentDiv.style.display = checkbox.checked ? 'block' : 'none';
-            checkbox.addEventListener('change', function() {
-                documentDiv.style.display = this.checked ? 'block' : 'none';
-            });
-        }
-    };
+	document.addEventListener("DOMContentLoaded", function () {
+		// Handle document upload fields visibility
+		const toggleDocumentField = function (checkboxId, documentDivId) {
+			const checkbox = document.getElementById(checkboxId);
+			const documentDiv = document.getElementById(documentDivId);
 
-    // Initialize document upload fields
-    toggleDocumentField('{{ family_form.is_single_parent.auto_id }}', 'single-parent-document-div');
-    toggleDocumentField('{{ family_form.is_veteran.auto_id }}', 'veteran-document-div');
-    toggleDocumentField('{{ family_form.has_disability.auto_id }}', 'disability-document-div');
-    toggleDocumentField('{{ family_form.has_disability.auto_id }}', 'disability-details-div');
-    
-    // Rest of your JavaScript from application_better.js should be added here
-});
+			if (checkbox && documentDiv) {
+				documentDiv.style.display = checkbox.checked ? "block" : "none";
+				checkbox.addEventListener("change", function () {
+					documentDiv.style.display = this.checked ? "block" : "none";
+				});
+			}
+		};
 
-document.addEventListener('DOMContentLoaded', function() {
-    const applicantTypeLabels = document.querySelectorAll('#applicant-type label');
-    const applicantTypeInputs = document.querySelectorAll('#applicant-type input[type="radio"]');
+		// Initialize document upload fields
+		toggleDocumentField("{{ family_form.is_single_parent.auto_id }}", "single-parent-document-div");
+		toggleDocumentField("{{ family_form.is_veteran.auto_id }}", "veteran-document-div");
+		toggleDocumentField("{{ family_form.has_disability.auto_id }}", "disability-document-div");
+		toggleDocumentField("{{ family_form.has_disability.auto_id }}", "disability-details-div");
 
-    applicantTypeLabels.forEach((label, index) => {
-        label.addEventListener('click', function() {
-            // Unselect all labels first
-            applicantTypeLabels.forEach(l => {
-                l.classList.remove('border-blue-300', 'border-2');
-                l.classList.remove('bg-blue-50');
-                l.querySelector('i').classList.remove('text-blue-600');
-                l.querySelector('i').classList.add('text-gray-400');
-            });
+		// Rest of your JavaScript from application_better.js should be added here
+	});
 
-            // Select the clicked label
-            this.classList.add('border-blue-300', 'border-2');
-            this.classList.add('bg-blue-50');
-            this.querySelector('i').classList.add('text-blue-600');
-            this.querySelector('i').classList.remove('text-gray-400');
+	document.addEventListener("DOMContentLoaded", function () {
+		const applicantTypeLabels = document.querySelectorAll("#applicant-type label");
+		const applicantTypeInputs = document.querySelectorAll('#applicant-type input[type="radio"]');
 
-            // Check the corresponding radio button
-            applicantTypeInputs[index].checked = true;
-        });
-    });
-});
+		applicantTypeLabels.forEach((label, index) => {
+			label.addEventListener("click", function () {
+				// Unselect all labels first
+				applicantTypeLabels.forEach((l) => {
+					l.classList.remove("border-blue-300", "border-2");
+					l.classList.remove("bg-blue-50");
+					l.querySelector("i").classList.remove("text-blue-600");
+					l.querySelector("i").classList.add("text-gray-400");
+				});
+
+				// Select the clicked label
+				this.classList.add("border-blue-300", "border-2");
+				this.classList.add("bg-blue-50");
+				this.querySelector("i").classList.add("text-blue-600");
+				this.querySelector("i").classList.remove("text-gray-400");
+
+				// Check the corresponding radio button
+				applicantTypeInputs[index].checked = true;
+			});
+		});
+	});
 </script>
 
 <script src="{% static 'js/application_better.js' %}"></script>
