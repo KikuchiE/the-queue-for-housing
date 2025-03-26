@@ -1,22 +1,121 @@
 {% extends "users/base.html" %}
 {% block content %}
-<div class="max-w-md mx-auto bg-blue-400 p-6 rounded-lg shadow-md">
+<div class="max-w-md w-[500px] mx-auto bg-white p-6 rounded-lg shadow-md border border-gray-300">
     <form method="POST" class="space-y-4">
         {% csrf_token %}
         <h3 class="text-2xl font-semibold text-center">Signup</h3>
-        {{ form.as_p }}
+        
+        {# First Name Field #}
+        <div>
+            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.first_name.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {# Last Name Field #}
+        <div>
+            <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.last_name.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {# Email Field #}
+        <div>
+            <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.email.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {# IIN Field #}
+        <div>
+            <label for="{{ form.iin.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">IIN (Individual Identification Number)</label>
+            {{ form.iin }}
+            {% if form.iin.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.iin.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {# Phone Number Field #}
+        <div>
+            <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            {{ form.phone_number }}
+            {% if form.phone_number.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.phone_number.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {# Password Field #}
+        <div>
+            <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.password.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {# Confirm Password Field #}
+        <div>
+            <label for="{{ form.confirm_password.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            {{ form.confirm_password }}
+            {% if form.confirm_password.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.confirm_password.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {# Non-field Errors #}
+        {% if form.non_field_errors %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <div class="mt-4">
             <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-300" type="submit">
                 Submit
             </button>
         </div>
-        
     </form>
+    
     <div class="border-t pt-3 mt-4 text-center">
         <small class="text-gray-600">
             Already have an account? <a class="text-blue-600 hover:underline" href="{% url 'users:login' %}">Login here</a>
         </small>
     </div>
 </div>
-
 {% endblock %}

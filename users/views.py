@@ -5,9 +5,6 @@ from django.contrib.auth import login, authenticate, logout
 from users.forms import SignupForm, UserLoginForm
 
 # Create your views here.
-def index(request):
-    return render(request, 'users/index.html')
-
 def signup_view(request):
     if request.method == "POST":
         form = SignupForm(request.POST)
@@ -73,6 +70,16 @@ def update_profile(request):
     
     # If not POST, redirect to profile page
     return redirect('profile')
+
+@login_required
+def delete_account(request):
+    if request.method == "POST":
+        user = request.user
+        user.delete()
+        logout(request)
+        messages.success(request, "Your account has been deleted.")
+        return redirect("applications:home")
+    # return render(request, "delete_account.html")
 
 def profile_view(request):
     return render(request, "users/profile.html")

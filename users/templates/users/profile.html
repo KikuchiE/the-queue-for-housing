@@ -40,13 +40,7 @@
 								name="iin"
 								value="{{ user.iin }}"
 								class="w-full border border-gray-300 rounded-lg p-2 mb-4"
-								{%
-								comment
-								%}
 								disabled
-								{%
-								endcomment
-								%}
 							/>
 						</div>
 
@@ -129,9 +123,18 @@
 				</div>
 			</div>
 		</form>
+		<form action="{% url 'users:delete_account' %}" method="post" onsubmit="return confirmDelete()">
+			{% csrf_token %}
+			<button type="submit" class="text-white p-2 rounded-md bg-red-500">Delete Account</button>
+		</form>
+		
 	</div>
 </div>
-
+<script>
+	function confirmDelete() {
+		return confirm("Are you sure you want to delete your account? This action cannot be undone.");
+	}
+</script>
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
 		const editButton = document.getElementById("editButton");
@@ -151,7 +154,7 @@
 		editButton.addEventListener("click", function () {
 			// Enable editing for all inputs except date fields and restricted fields
 			inputs.forEach((input) => {
-				if (input.id !== "iin" && input.id !== "email") {
+				if (input.id !== "email") {
 					input.disabled = false;
 					input.classList.add("bg-white");
 				}
