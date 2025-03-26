@@ -21,13 +21,11 @@
 				<select class="w-full p-2 border border-gray-300 rounded mt-1">
 					<option value="">All Statuses</option>
 					<option value="SUBMITTED">Submitted</option>
-					<option value="UNDER_REVIEW">Under Review</option>
-					<option value="VERIFIED">Verified</option>
 					<option value="IN_QUEUE">In Queue</option>
 					<option value="HOUSING_OFFERED">Housing Offered</option>
 					<option value="ACCEPTED">Accepted</option>
-					<option value="REJECTED">Rejected</option>
-					<option value="EXPIRED">Expired</option>
+					<option value="REJECTED_BY_APPLICANT">Rejected by Applicant</option>
+					<option value="REJECTED_BY_MANAGER">Rejected by Manager</option>
 				</select>
 			</div>
 		</div>
@@ -62,7 +60,7 @@
 						</td>
 						<td class="py-2 px-4 border-b">
 							<span
-								class="px-2 py-1 rounded-full text-xs {% if application.status == 'SUBMITTED' %}bg-blue-100 text-blue-800 {% elif application.status == 'UNDER_REVIEW' %}bg-yellow-100 text-yellow-800 {% elif application.status == 'VERIFIED' %}bg-purple-100 text-purple-800 {% elif application.status == 'IN_QUEUE' %}bg-indigo-100 text-indigo-800 {% elif application.status == 'HOUSING_OFFERED' %}bg-orange-100 text-orange-800 {% elif application.status == 'ACCEPTED' %}bg-green-100 text-green-800 {% elif application.status == 'REJECTED' %}bg-red-100 text-red-800 {% elif application.status == 'EXPIRED' %}bg-gray-100 text-gray-800 {% endif %}"
+								class="px-2 py-1 rounded-full text-xs {% if application.status == 'SUBMITTED' %}bg-blue-100 text-blue-800 {% elif application.status == 'IN_QUEUE' %}bg-indigo-100 text-indigo-800 {% elif application.status == 'HOUSING_OFFERED' %}bg-orange-100 text-orange-800 {% elif application.status == 'ACCEPTED' %}bg-green-100 text-green-800 {% elif application.status == 'REJECTED_BY_MANAGER' or application.status == 'REJECTED_BY_APPLICANT' %}bg-red-100 text-red-800 {% elif application.status == 'EXPIRED' %}bg-gray-100 text-gray-800 {% endif %}"
 							>
 								{{ application.get_status_display }}
 							</span>
@@ -87,368 +85,19 @@
 				</tbody>
 			</table>
 		</div>
-
 		<div class="flex justify-between items-center mt-4">
-			<span>Total: {{ applications|length }} applications</span>
+			<span>Total records: {{ applications.count }}</span>
 			<div class="flex items-center space-x-2">
 				{% if applications.has_previous %}
-				<a href="?page={{ applications.previous_page_number }}" class="px-3 py-1 border rounded hover:bg-gray-100">
-					<i class="fas fa-chevron-left"></i>
-				</a>
+				<a href="?page={{ applications.previous_page_number }}" class="px-3 py-1 border rounded">Previous</a>
 				{% endif %}
-
 				<span class="px-3 py-1">Page {{ applications.number }} of {{ applications.paginator.num_pages }}</span>
-
 				{% if applications.has_next %}
-				<a href="?page={{ applications.next_page_number }}" class="px-3 py-1 border rounded hover:bg-gray-100">
-					<i class="fas fa-chevron-right"></i>
-				</a>
+				<a href="?page={{ applications.next_page_number }}" class="px-3 py-1 border rounded">Next</a>
 				{% endif %}
 			</div>
 		</div>
+
 	</div>
 </div>
-
-<!-- Application Details Modal -->
-<div id="applicationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-	<div class="bg-white rounded-lg shadow-lg w-3/4 max-h-screen overflow-y-auto">
-		<div class="border-b px-6 py-3 flex justify-between items-center">
-			<h3 class="text-lg font-semibold" id="modalTitle">Application Details</h3>
-			<button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
-				<i class="fas fa-times"></i>
-			</button>
-		</div>
-
-		<div class="p-6" id="applicationDetails">
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-				<!-- Left Column -->
-				<div>
-					<h4 class="font-semibold text-lg mb-4">Applicant Information</h4>
-					<div class="mb-4">
-						<p>
-							<span class="font-medium">Application #:</span>
-							<span id="app-number"></span>
-						</p>
-						<p>
-							<span class="font-medium">Name:</span>
-							<span id="app-name"></span>
-						</p>
-						<p>
-							<span class="font-medium">Status:</span>
-							<span id="app-status"></span>
-						</p>
-						<p>
-							<span class="font-medium">Submission Date:</span>
-							<span id="app-date"></span>
-						</p>
-						<p>
-							<span class="font-medium">Priority Score:</span>
-							<span id="app-score"></span>
-						</p>
-						<p>
-							<span class="font-medium">Queue Position:</span>
-							<span id="app-position"></span>
-						</p>
-					</div>
-
-					<h4 class="font-semibold text-lg mb-4">Household Information</h4>
-					<div class="mb-4">
-						<p>
-							<span class="font-medium">Monthly Income:</span>
-							<span id="app-income"></span>
-						</p>
-						<p>
-							<span class="font-medium">Current Address:</span>
-							<span id="app-address"></span>
-						</p>
-						<p>
-							<span class="font-medium">Current Living Area:</span>
-							<span id="app-area"></span>
-							m²
-						</p>
-						<p>
-							<span class="font-medium">Adults:</span>
-							<span id="app-adults"></span>
-						</p>
-						<p>
-							<span class="font-medium">Children:</span>
-							<span id="app-children"></span>
-						</p>
-						<p>
-							<span class="font-medium">Elderly:</span>
-							<span id="app-elderly"></span>
-						</p>
-					</div>
-
-					<h4 class="font-semibold text-lg mb-4">Special Conditions</h4>
-					<div class="mb-4">
-						<p>
-							<span class="font-medium">Veteran:</span>
-							<span id="app-veteran"></span>
-						</p>
-						<p>
-							<span class="font-medium">Single Parent:</span>
-							<span id="app-single-parent"></span>
-						</p>
-						<p>
-							<span class="font-medium">Disability:</span>
-							<span id="app-disability"></span>
-						</p>
-						<p>
-							<span class="font-medium">Disability Details:</span>
-							<span id="app-disability-details"></span>
-						</p>
-						<p>
-							<span class="font-medium">Waiting Years:</span>
-							<span id="app-waiting"></span>
-						</p>
-					</div>
-				</div>
-
-				<!-- Right Column -->
-				<div>
-					<h4 class="font-semibold text-lg mb-4">Update Application Status</h4>
-					<form id="updateStatusForm">
-						<input type="hidden" id="application-id" name="application_id" />
-
-						<div class="mb-4">
-							<label class="block text-gray-700 mb-2">Change Status To:</label>
-							<select id="new-status" name="new_status" class="w-full p-2 border border-gray-300 rounded">
-								<option value="">Select new status...</option>
-								<option value="UNDER_REVIEW">Under Review</option>
-								<option value="VERIFIED">Verified</option>
-								<option value="IN_QUEUE">In Queue</option>
-								<option value="REJECTED">Rejected</option>
-							</select>
-						</div>
-
-						<div class="mb-4" id="rejection-reason-container" style="display: none">
-							<label class="block text-gray-700 mb-2">Rejection Reason:</label>
-							<textarea
-								name="rejection_reason"
-								id="rejection-reason"
-								class="w-full p-2 border border-gray-300 rounded"
-								rows="3"
-							></textarea>
-						</div>
-
-						<div class="mb-4">
-							<label class="block text-gray-700 mb-2">Notes:</label>
-							<textarea
-								name="notes"
-								id="status-notes"
-								class="w-full p-2 border border-gray-300 rounded"
-								rows="3"
-							></textarea>
-						</div>
-
-						<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Update Status</button>
-					</form>
-
-					<div id="housing-allocation-section" class="mt-8">
-						<h4 class="font-semibold text-lg mb-4">Allocate Housing</h4>
-						<form id="allocateHousingForm">
-							<input type="hidden" id="allocation-application-id" name="application_id" />
-
-							<div class="mb-4">
-								<label class="block text-gray-700 mb-2">Select Housing Unit:</label>
-								<select id="housing-unit" name="housing_unit" class="w-full p-2 border border-gray-300 rounded">
-									<option value="">Select housing unit...</option>
-									{% for unit in available_units %}
-									<option value="{{ unit.id }}">
-										{{ unit.unit_number }} - {{ unit.rooms_count }} rooms, {{ unit.total_area }}m²
-									</option>
-									{% endfor %}
-								</select>
-							</div>
-
-							<div class="mb-4">
-								<label class="block text-gray-700 mb-2">Response Deadline:</label>
-								<input
-									type="date"
-									name="response_deadline"
-									id="response-deadline"
-									class="w-full p-2 border border-gray-300 rounded"
-								/>
-							</div>
-
-							<div class="mb-4">
-								<label class="block text-gray-700 mb-2">Notes:</label>
-								<textarea
-									name="allocation_notes"
-									id="allocation-notes"
-									class="w-full p-2 border border-gray-300 rounded"
-									rows="3"
-								></textarea>
-							</div>
-
-							<button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Offer Housing</button>
-						</form>
-					</div>
-
-					<div id="application-history" class="mt-8">
-						<h4 class="font-semibold text-lg mb-4">Application History</h4>
-						<div id="history-list" class="border rounded-lg overflow-hidden">
-							<!-- Application history will be loaded here -->
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<script>
-	// Show or hide rejection reason based on selected status
-
-	document.getElementById("new-status").addEventListener("change", function () {
-		const rejectionContainer = document.getElementById("rejection-reason-container");
-		if (this.value === "REJECTED") {
-			rejectionContainer.style.display = "block";
-		} else {
-			rejectionContainer.style.display = "none";
-		}
-	});
-
-	// Functions to handle the modal
-	function closeModal() {
-		document.getElementById("applicationModal").classList.add("hidden");
-	}
-
-	function viewApplication(applicationId) {
-		// Show the modal
-		document.getElementById("applicationModal").classList.remove("hidden");
-
-		// Fetch application details
-	}
-
-	function loadApplicationHistory(applicationId) {
-		const historyList = document.getElementById("history-list");
-		historyList.innerHTML = '<p class="p-4 text-center">Loading history...</p>';
-
-	}
-
-	// Form submission handlers
-	document.getElementById("updateStatusForm").addEventListener("submit", function (e) {
-		e.preventDefault();
-
-		const applicationId = document.getElementById("application-id").value;
-		const newStatus = document.getElementById("new-status").value;
-		const notes = document.getElementById("status-notes").value;
-		let rejectionReason = null;
-
-		if (newStatus === "") {
-			alert("Please select a new status");
-			return;
-		}
-
-		if (newStatus === "REJECTED") {
-			rejectionReason = document.getElementById("rejection-reason").value;
-			if (!rejectionReason) {
-				alert("Please provide a rejection reason");
-				return;
-			}
-		}
-
-		const formData = {
-			new_status: newStatus,
-			notes: notes,
-			rejection_reason: rejectionReason,
-		};
-
-		fetch(`/api/applications/${applicationId}/update-status/`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": getCookie("csrftoken"),
-			},
-			body: JSON.stringify(formData),
-		})
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error("Network response was not ok");
-				}
-				return response.json();
-			})
-			.then((data) => {
-				alert("Application status updated successfully");
-				// Refresh application details
-				viewApplication(applicationId);
-				// Optionally refresh the applications list
-				location.reload();
-			})
-			.catch((error) => {
-				console.error("Error updating application status:", error);
-				alert("Error updating application status. Please try again.");
-			});
-	});
-
-	document.getElementById("allocateHousingForm").addEventListener("submit", function (e) {
-		e.preventDefault();
-
-		const applicationId = document.getElementById("allocation-application-id").value;
-		const housingUnitId = document.getElementById("housing-unit").value;
-		const responseDeadline = document.getElementById("response-deadline").value;
-		const notes = document.getElementById("allocation-notes").value;
-
-		if (!housingUnitId) {
-			alert("Please select a housing unit");
-			return;
-		}
-
-		if (!responseDeadline) {
-			alert("Please select a response deadline");
-			return;
-		}
-
-		const formData = {
-			housing_unit_id: housingUnitId,
-			response_deadline: responseDeadline,
-			notes: notes,
-		};
-
-		fetch(`/api/applications/${applicationId}/allocate-housing/`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": getCookie("csrftoken"),
-			},
-			body: JSON.stringify(formData),
-		})
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error("Network response was not ok");
-				}
-				return response.json();
-			})
-			.then((data) => {
-				alert("Housing offered successfully");
-				// Refresh application details
-				viewApplication(applicationId);
-				// Optionally refresh the applications list
-				location.reload();
-			})
-			.catch((error) => {
-				console.error("Error allocating housing:", error);
-				alert("Error offering housing. Please try again.");
-			});
-	});
-
-	// Helper function to get CSRF token
-	function getCookie(name) {
-		let cookieValue = null;
-		if (document.cookie && document.cookie !== "") {
-			const cookies = document.cookie.split(";");
-			for (let i = 0; i < cookies.length; i++) {
-				const cookie = cookies[i].trim();
-				if (cookie.substring(0, name.length + 1) === name + "=") {
-					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-					break;
-				}
-			}
-		}
-		return cookieValue;
-	}
-</script>
-
 {% endblock %}

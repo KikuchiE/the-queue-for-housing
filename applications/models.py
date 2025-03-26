@@ -5,9 +5,8 @@ import os, uuid
 # Create your models here.
 class Application(models.Model):
     STATUS_CHOICES = [
-        # ('DRAFT', 'Draft'),
         ('SUBMITTED', 'Submitted'),
-        ('UNDER_REVIEW', 'Under Review'),
+        # ('UNDER_REVIEW', 'Under Review'),
         # ('VERIFIED', 'Verified'),
         ('IN_QUEUE', 'In Queue'),
         ('HOUSING_OFFERED', 'Housing Offered'),
@@ -15,7 +14,6 @@ class Application(models.Model):
         ('REJECTED_BY_APPLICANT', 'Rejected by Applicant'), 
         ('REJECTED_BY_MANAGER', 'Rejected by Manager'),
         # ('CANCELLED', 'Cancelled'),
-        # ('EXPIRED', 'Expired'),
     ]
 
     applicant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
@@ -90,7 +88,7 @@ class Application(models.Model):
         self.priority_score = score
         self.save(update_fields=['priority_score'])
         return score
-    
+
     def save(self, *args, **kwargs):
         if not self.application_number:
             last_application = Application.objects.order_by('-id').first()
