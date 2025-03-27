@@ -18,6 +18,7 @@ class Application(models.Model):
 
     applicant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
     is_for_ward = models.BooleanField(default=False)
+    rejection_reason = models.TextField(blank=True, null=True)
     application_number = models.CharField(max_length=20, unique=True)
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='SUBMITTED')
     submission_date = models.DateTimeField(auto_now_add=True)
@@ -104,7 +105,6 @@ class Application(models.Model):
 class ApplicationHistory(models.Model):
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='history')
     previous_status = models.CharField(max_length=30, choices=Application.STATUS_CHOICES)
-    rejection_reason = models.TextField(blank=True, null=True)
     new_status = models.CharField(max_length=30, choices=Application.STATUS_CHOICES)
     change_date = models.DateTimeField(auto_now_add=True)
     changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)

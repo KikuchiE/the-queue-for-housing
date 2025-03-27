@@ -33,7 +33,7 @@
 					<div class="flex justify-between">
 						<span class="font-medium text-gray-600">Current Status:</span>
 						<span
-							class="{% if application.status == 'SUBMITTED' %}text-blue-600 {% elif application.status == 'UNDER_REVIEW' %}text-yellow-600 {% elif application.status == 'IN_QUEUE' %}text-orange-600 {% elif application.status == 'HOUSING_OFFERED' %}text-green-600 {% elif application.status == 'ACCEPTED' %}text-green-800 {% else %}text-red-600 {% endif %} font-bold"
+							class="{% if application.status == 'SUBMITTED' %}text-blue-600 {% elif application.status == 'UNDER_REVIEW' %}text-yellow-600 {% elif application.status == 'IN_QUEUE' %}text-green-600 {% elif application.status == 'HOUSING_OFFERED' %}text-green-600 {% elif application.status == 'ACCEPTED' %}text-green-800 {% else %}text-red-600 {% endif %} font-bold"
 						>
 							{{ application.status }}
 						</span>
@@ -154,10 +154,12 @@
 					<tbody>
 						{% for entry in history %}
 						<tr class="border-b">
-							<td class="p-2">{{ entry.change_date|date:"d M Y H:i" }}</td>
+							<td class="p-2">{{ entry.change_date|date:"d M Y H:i"|default:application.submission_date }}</td>
 							<td class="p-2">{{ entry.previous_status|default:"Initial Submission" }}</td>
 							<td class="p-2">{{ entry.new_status }}</td>
-							<td class="p-2">{{ entry.changed_by.first_name }} {{ entry.changed_by.last_name }}</td>
+							<td class="p-2">
+								{{ entry.changed_by.first_name|default:application.applicant }} {{ entry.changed_by.last_name }}
+							</td>
 							<td class="p-2">{{ entry.notes|default:"No additional notes" }}</td>
 						</tr>
 						{% endfor %}
@@ -167,6 +169,40 @@
 			{% else %}
 			<p class="text-gray-500">No application history available.</p>
 			{% endif %}
+		</div>
+
+		<!-- Application Actions -->
+		<div class="bg-gray-50 p-4 rounded-lg mt-6">
+			<h2 class="text-xl font-semibold mb-4 border-b pb-2">Application Actions</h2>
+			<div class="flex justify-between">
+				<div class="mt-4">
+					<a
+						href="{% url 'applications:view-application' application.id %}"
+						class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+					>
+						Delete
+					</a>
+				</div>
+				{% if user.is_staff or user.is_administrator %}
+				<div class="mt-4 flex space-x-4">
+					<form action="{% url 'applications:update-application-status' application.id 'REJECTED_BY_APPLICANT' %}" method="POST">
+						{% csrf_token %}
+						<div
+							class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition"
+						>
+							Reject
+						</div>
+					</form>
+
+					<form action="{% url 'applications:update-application-status' application.id 'IN_QUEUE' %}" method="POST">
+						{% csrf_token %}
+						<button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+							Add to Queue
+						</button>
+					</form>
+				</div>
+				{% endif %}
+			</div>
 		</div>
 	</div>
 </div>

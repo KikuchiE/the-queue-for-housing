@@ -166,6 +166,7 @@ def view_application(request, application_id):
         'is_for_ward': application.is_for_ward,
         'application_number': application.application_number,
         'status': application.get_status_display(),
+        'applicant': application.applicant,
         'priority_score': application.priority_score,
         'submission_date': application.submission_date.strftime('%Y-%m-%d %H:%M'),
         'applicant': application.applicant,
@@ -183,6 +184,7 @@ def view_application(request, application_id):
         'documents': application.documents.all(),        
         'has_documents': application.documents.exists(),
     }
+    print(application.submission_date.strftime('%Y-%m-%d %H:%M'))
 
     # Get history data
     history_data = []
@@ -247,3 +249,25 @@ def queue_members(request):
     }
     
     return render(request, 'queue_members.html', context)
+
+def update_application_status(request, application_id, new_status):
+    application = get_object_or_404(Application, id=application_id)
+
+    if request.method == 'POST':
+        # notes = request.POST.get('notes')
+        
+        # Update application status
+        application.status = new_status
+        application.save()
+        
+        # Create history record
+        ApplicationHistory.objects.create(
+            application=application,
+            previous_status=application.status,
+            new_status=new_status,
+            changed_by=request.user,
+            # notes=notes
+        )
+        
+        messages.success(request, 'Application status updated successfully.')
+        return redirect('applications:view-application', application_id=application.id)

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mx-auto p-4">
+    <div class="flex justify-between items-center mt-10 mb-4">
+        <h1 class="text-xl font-bold">Housing Units</h1>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex space-x-4 mb-4">
+            <a href="{% url 'housing_units:create-unit' %}" class="block">
+                <button class="bg-green-500 text-white px-4 py-2 rounded">Add New Housing Unit</button>
+            </a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b">Unit Number</th>
+                        <th class="py-2 px-4 border-b">Address</th>
+                        <th class="py-2 px-4 border-b">Rooms</th>
+                        <th class="py-2 px-4 border-b">Total Area (m²)</th>
+                        <th class="py-2 px-4 border-b">Status</th>
+                        <th class="py-2 px-4 border-b">Accessibility</th>
+                        <th class="py-2 px-4 border-b">Next Available</th>
+                        <th class="py-2 px-4 border-b">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if housing_units %}
+                        {% for unit in housing_units %}
+                        <tr>
+                            <td class="py-2 px-4 border-b">{{ unit.unit_number }}</td>
+                            <td class="py-2 px-4 border-b">{{ unit.address }}</td>
+                            <td class="py-2 px-4 border-b">{{ unit.rooms_count }}</td>
+                            <td class="py-2 px-4 border-b">{{ unit.total_area }}</td>
+                            <td class="py-2 px-4 border-b">
+                                {% if unit.status == 'AVAILABLE' %}
+                                <span class="text-green-600">Available</span>
+                                {% elif unit.status == 'RESERVED' %}
+                                <span class="text-yellow-600">Reserved</span>
+                                {% elif unit.status == 'OCCUPIED' %}
+                                <span class="text-red-600">Occupied</span>
+                                {% elif unit.status == 'MAINTENANCE' %}
+                                <span class="text-blue-600">Under Maintenance</span>
+                                {% else %}
+                                {{ unit.status }}
+                                {% endif %}
+                            </td>
+                            <td class="py-2 px-4 border-b">
+                                {{ unit.is_accessible|yesno:"Accessible,Not Accessible" }}
+                            </td>
+                            <td class="py-2 px-4 border-b">
+                                {{ unit.next_available_date|default:"Not specified"|date:"d M Y" }}
+                            </td>
+                            <td class="py-2 px-4 border-b">
+                                <div class="flex space-x-2">
+                                    <a href="{% url 'housing_units:view-unit' unit.id %}" class="text-blue-500 hover:underline">View</a>
+                                    {% if unit.status == 'AVAILABLE' %}
+                                    <a href="{% url 'housing_units:edit-unit' unit.id %}" class="text-yellow-500 hover:underline">Edit</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td class="py-2 px-4 border-b text-center" colspan="8">No housing units found</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <div class="flex justify-between items-center mt-4">
+            <span>Total units: {{ housing_units_count }}</span>
+            <div class="flex items-center space-x-2">
+                {% if housing_units.has_previous %}
+                <a href="?page={{ housing_units.previous_page_number }}" class="px-3 py-1 border rounded">Previous</a>
+                {% endif %}
+                <span class="px-3 py-1">Page {{ housing_units.number }} of {{ housing_units.paginator.num_pages }}</span>
+                {% if housing_units.has_next %}
+                <a href="?page={{ housing_units.next_page_number }}" class="px-3 py-1 border rounded">Next</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
