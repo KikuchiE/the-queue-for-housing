@@ -5,7 +5,7 @@
 			<h1 class="text-2xl font-bold text-gray-800">Application Details</h1>
 			{% if application.status == 'SUBMITTED' or application.status == 'UNDER_REVIEW' %}
 			<a
-				href="{% url 'edit_application' %}"
+				href=""
 				class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
 			>
 				Edit Application
@@ -117,9 +117,9 @@
 		<!-- Uploaded Documents -->
 		<div class="bg-gray-50 p-4 rounded-lg mt-6">
 			<h2 class="text-xl font-semibold mb-4 border-b pb-2">Uploaded Documents</h2>
-			{% if application.documents.exists %}
+			{% if documents.exists %}
 			<div class="grid md:grid-cols-2 gap-4">
-				{% for doc in application.documents %}
+				{% for doc in documents %}
 				<div class="bg-white p-3 rounded shadow-sm">
 					<div class="flex justify-between items-center">
 						<a href="{{ doc.file.url }}" target="_blank" class="text-blue-500 hover:text-blue-700 transition">
@@ -185,38 +185,175 @@
 				</div>
 				{% if user.is_staff or user.is_administrator %}
 				<div class="mt-4 flex space-x-4">
-					<form action="{% url 'applications:update-application-status' application.id 'REJECTED_BY_APPLICANT' %}" method="POST">
-						{% csrf_token %}
-						<div
-							class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition"
-						>
-							Reject
-						</div>
-					</form>
-
-					<form action="{% url 'applications:update-application-status' application.id 'IN_QUEUE' %}" method="POST">
-						{% csrf_token %}
-						<button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
-							Add to Queue
-						</button>
-					</form>
+					{% if application.status == 'SUBMITTED' %}
+					<button 
+						onclick="openRejectModal()"
+						class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition"
+					>
+						Reject
+					</button>
+					<button 
+						onclick="addToQueue()"
+						class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+					>
+						Add to Queue
+					</button>
+					{% elif application.status == 'IN_QUEUE' %}
+					<button 
+						onclick="openHousingUnitsModal()"
+						class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+					>
+						Offer Housing Unit
+					</button>
+					{% endif %}
 				</div>
 				{% endif %}
 			</div>
 		</div>
 	</div>
+
+	<!-- Reject Reason Modal -->
+	<div id="rejectModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+		<div class="bg-white p-6 rounded-lg w-96">
+			<h2 class="text-xl font-bold mb-4">Reject Application</h2>
+			<form id="rejectForm" method="POST" action="{% url 'applications:reject-application' application.id %}">
+				{% csrf_token %}
+				<div class="mb-4">
+					<label for="rejectionReason" class="block text-gray-700 mb-2">Reason for Rejection</label>
+					<textarea 
+						id="rejectionReason" 
+						name="rejection_reason" 
+						rows="4" 
+						class="w-full border rounded p-2" 
+						required
+					></textarea>
+				</div>
+				<div class="flex justify-end space-x-2">
+					<button 
+						type="button" 
+						onclick="closeRejectModal()"
+						class="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+					>
+						Cancel
+					</button>
+					<button 
+						type="submit" 
+						class="bg-red-500 text-white px-4 py-2 rounded"
+					>
+						Confirm Rejection
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Housing Units Modal -->
+	<div id="housingUnitsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+		<div class="bg-white p-6 rounded-lg w-[600px]">
+			<h2 class="text-xl font-bold mb-4">Available Housing Units</h2>
+			<form id="offerHousingForm" method="POST" action="{% url 'housing_units:offer-housing' application.id %}">
+				{% csrf_token %}
+				<div class="max-h-[400px] overflow-y-auto">
+					<table class="w-full">
+						<thead>
+							<tr class="bg-gray-100">
+								<th class="p-2 text-left">Select</th>
+								<th class="p-2 text-left">Unit Number</th>
+								<th class="p-2 text-left">Rooms</th>
+								<th class="p-2 text-left">Total Area</th>
+								<th class="p-2 text-left">Accessibility</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for unit in available_housing_units %}
+							<tr class="border-b">
+								<td class="p-2">
+									<input 
+										type="radio" 
+										name="housing_unit" 
+										value="{{ unit.id }}" 
+										class="form-radio"
+										required
+									>
+								</td>
+								<td class="p-2">{{ unit.unit_number }}</td>
+								<td class="p-2">{{ unit.rooms_count }}</td>
+								<td class="p-2">{{ unit.total_area }} m²</td>
+								<td class="p-2">
+									{% if unit.is_accessible %}
+									<span class="text-green-600">Yes</span>
+									{% else %}
+									<span class="text-gray-500">No</span>
+									{% endif %}
+								</td>
+							</tr>
+							{% empty %}
+							<tr>
+								<td colspan="5" class="p-4 text-center text-gray-500">
+									No available housing units at the moment.
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+				<div class="mt-4 flex justify-end space-x-2">
+					<button 
+						type="button" 
+						onclick="closeHousingUnitsModal()"
+						class="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+					>
+						Cancel
+					</button>
+					<button 
+						type="submit" 
+						class="bg-green-500 text-white px-4 py-2 rounded"
+						{% if not available_housing_units %}disabled{% endif %}
+					>
+						Offer Selected Unit
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
 </div>
-{% endblock %} {% block extra_js %}
+{% endblock %}
+
+{% block extra_js %}
 <script>
-	document.addEventListener("DOMContentLoaded", function () {
-		// Optional: Add any interactive features for the view application page
-		const documentLinks = document.querySelectorAll('a[href*="documents"]');
-		documentLinks.forEach((link) => {
-			link.addEventListener("click", function (e) {
-				e.preventDefault();
-				window.open(this.href, "Document", "width=800,height=600");
-			});
-		});
+	function openRejectModal() {
+		document.getElementById('rejectModal').classList.remove('hidden');
+	}
+
+	function closeRejectModal() {
+		document.getElementById('rejectModal').classList.add('hidden');
+	}
+
+	function addToQueue() {
+		// You'll need to implement the add to queue functionality
+		window.location.href = "{% url 'applications:update-application-status' application.id 'IN_QUEUE' %}";
+	}
+
+	function openHousingUnitsModal() {
+		document.getElementById('housingUnitsModal').classList.remove('hidden');
+	}
+
+	function closeHousingUnitsModal() {
+		document.getElementById('housingUnitsModal').classList.add('hidden');
+	}
+
+	// Close modals if clicking outside the modal content
+	document.addEventListener('click', function(event) {
+		const rejectModal = document.getElementById('rejectModal');
+		const housingUnitsModal = document.getElementById('housingUnitsModal');
+
+		if (event.target === rejectModal) {
+			closeRejectModal();
+		}
+
+		if (event.target === housingUnitsModal) {
+			closeHousingUnitsModal();
+		}
 	});
 </script>
 {% endblock %}

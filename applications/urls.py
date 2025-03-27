@@ -11,6 +11,7 @@ urlpatterns = [
     path('my-application/list/', views.my_applications, name='my-applications-list'),
     path('my-application/create', views.create_application, name="create-application"),
     path('my-application/<int:application_id>/', views.view_application, name='view-application'),
+    path('application/reject/<int:application_id>/', views.reject_application, name='reject-application'),
     # path('my-application/<int:application_id>/edit/', views.edit_application, name='edit-application'),
     path('application/update-status/<int:application_id>/<str:new_status>', views.update_application_status, name='update-application-status'),
 ]

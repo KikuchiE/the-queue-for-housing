@@ -3,6 +3,11 @@ from .models import HousingUnit
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.core.paginator import Paginator
+from applications.models import Application
+from .models import HousingUnit, HousingAllocation
+from django.utils import timezone
+from datetime import timedelta
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -76,3 +81,30 @@ def edit_housing_unit(request, unit_id):
         'view_mode': 'edit'
     }
     return render(request, 'view_housing_unit.html', context)
+
+@login_required
+def offer_housing(request, application_id):
+    application = get_object_or_404(Application, id=application_id)
+    
+    if request.method == 'POST':
+        housing_unit_id = request.POST.get('housing_unit')
+        housing_unit = get_object_or_404(HousingUnit, id=housing_unit_id)
+        
+        # Create housing allocation
+        HousingAllocation.objects.create(
+            application=application,
+            housing_unit=housing_unit,
+            changed_by=request.user,
+            # response_deadline=timezone.now() + timedelta(days=7),
+            status='OFFERED'
+        )
+        
+        # Update application status
+        application.status = 'HOUSING_OFFERED'
+        application.save()
+        
+        # Update housing unit status
+        housing_unit.status = 'RESERVED'
+        housing_unit.save()
+        
+        return redirect('applications:view-application', application_id=application.id)

@@ -1,7 +1,6 @@
 from django.db import models
 from users.models import User
 
-# Create your models here.
 class HousingUnit(models.Model):
     UNIT_STATUS = [
         ('AVAILABLE', 'Available'),
@@ -21,7 +20,7 @@ class HousingUnit(models.Model):
     
     has_elevator = models.BooleanField(default=False)
     has_heating = models.BooleanField(default=True)
-    
+    4
     last_inspection_date = models.DateField(null=True, blank=True)
     next_available_date = models.DateField(null=True, blank=True)
     
@@ -42,7 +41,7 @@ class HousingAllocation(models.Model):
     housing_unit = models.ForeignKey(HousingUnit, on_delete=models.CASCADE)
     changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     offer_date = models.DateField(auto_now_add=True)
-    response_deadline = models.DateField()
+    # response_deadline = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='OFFERED')
     rejection_reason = models.TextField(null=True, blank=True)
 

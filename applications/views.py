@@ -3,6 +3,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .forms import ApplicantDataForm, FamilyDataForm
 from django.shortcuts import render
 from .models import Application, ApplicationHistory, ApplicationDocument
+from housing_units.models import HousingUnit, HousingAllocation
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.contrib import messages
@@ -160,32 +161,6 @@ def view_application(request, application_id):
     if (application.applicant != request.user) and not (current_user.is_administrator or current_user.is_staff):
         raise Http404("This page doesn't exist")
 
-    # Format application data for response
-    application_data = {
-        'id': application.id,
-        'is_for_ward': application.is_for_ward,
-        'application_number': application.application_number,
-        'status': application.get_status_display(),
-        'applicant': application.applicant,
-        'priority_score': application.priority_score,
-        'submission_date': application.submission_date.strftime('%Y-%m-%d %H:%M'),
-        'applicant': application.applicant,
-        'monthly_income': application.monthly_income,
-        'children_count': application.children_count,
-        'has_disability': application.has_disability,
-        'current_address': application.current_address,
-        'current_living_area': application.current_living_area,
-        'adults_count': application.adults_count,
-        'elderly_count': application.elderly_count,
-        'is_veteran': application.is_veteran,
-        'is_single_parent': application.is_single_parent,
-        'waiting_years': application.waiting_years,
-        'document_verified': application.document_verified,
-        'documents': application.documents.all(),        
-        'has_documents': application.documents.exists(),
-    }
-    print(application.submission_date.strftime('%Y-%m-%d %H:%M'))
-
     # Get history data
     history_data = []
     for history in application.history.all().order_by('-change_date'):
@@ -199,7 +174,9 @@ def view_application(request, application_id):
     
     return render(request, 'view_application.html', {
         'success': True,
-        'application': application_data,
+        'application': application,
+        'documents': application.documents.all(),
+        'available_housing_units': HousingUnit.objects.filter(status='AVAILABLE'),
         'history': history_data,
     })
 
@@ -270,4 +247,27 @@ def update_application_status(request, application_id, new_status):
         )
         
         messages.success(request, 'Application status updated successfully.')
+        return redirect('applications:view-application', application_id=application.id)
+
+@login_required
+def reject_application(request, application_id):
+    application = get_object_or_404(Application, id=application_id)
+    
+    if request.method == 'POST':
+        rejection_reason = request.POST.get('rejection_reason')
+        
+        # Update application status and reason
+        application.status = 'REJECTED_BY_MANAGER'
+        application.rejection_reason = rejection_reason
+        application.save()
+        
+        # Create application history entry
+        ApplicationHistory.objects.create(
+            application=application,
+            previous_status=application.status,
+            new_status='REJECTED_BY_MANAGER',
+            changed_by=request.user,
+            notes=rejection_reason
+        )
+        
         return redirect('applications:view-application', application_id=application.id)
