@@ -5,97 +5,90 @@
 	</div>
 
 	<!-- Application Search and Filter -->
-	<div class="bg-white p-6 rounded-lg shadow-md mb-6">
-		<h2 class="text-lg font-semibold mb-4">Search Applications</h2>
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-			<div>
-				<label class="block text-gray-700">Applicant's IIN</label>
-				<input type="text" class="w-full p-2 border border-gray-300 rounded mt-1" placeholder="Applicant's IIN" />
-			</div>
-			<div>
-				<label class="block text-gray-700">Application Number</label>
-				<input type="text" class="w-full p-2 border border-gray-300 rounded mt-1" placeholder="Application Number" />
-			</div>
-			<div>
-				<label class="block text-gray-700">Status</label>
-				<select class="w-full p-2 border border-gray-300 rounded mt-1">
-					<option value="">All Statuses</option>
-					<option value="SUBMITTED">Submitted</option>
-					<option value="IN_QUEUE">In Queue</option>
-					<option value="HOUSING_OFFERED">Housing Offered</option>
-					<option value="ACCEPTED">Accepted</option>
-					<option value="REJECTED_BY_APPLICANT">Rejected by Applicant</option>
-					<option value="REJECTED_BY_MANAGER">Rejected by Manager</option>
-				</select>
-			</div>
-		</div>
-		<div class="flex space-x-4">
-			<button class="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
-			<button class="bg-gray-300 text-gray-700 px-4 py-2 rounded">Clear</button>
-		</div>
-	</div>
+<form method="get" class="bg-white p-6 rounded-lg shadow-md mb-6">
+    <h2 class="text-lg font-semibold mb-4">Search Applications</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        <div>
+            {{ filter_form.applicant_iin.label_tag }}
+            {{ filter_form.applicant_iin }}
+        </div>
+        <div>
+            {{ filter_form.application_number.label_tag }}
+            {{ filter_form.application_number }}
+        </div>
+        <div>
+            {{ filter_form.status.label_tag }}
+            {{ filter_form.status }}
+        </div>
+    </div>
+    <div class="flex space-x-4">
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
+        <a href="{% url 'dashboard:dashboard' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded">Clear</a>
+    </div>
+</form>
 
-	<!-- Applications List -->
-	<div class="bg-white p-6 rounded-lg shadow-md">
-		<h2 class="text-lg font-semibold mb-4">Applications List</h2>
-		<div class="overflow-x-auto">
-			<table class="min-w-full bg-white">
-				<thead>
-					<tr class="bg-gray-100">
-						<th class="py-2 px-4 border-b">Application #</th>
-						<th class="py-2 px-4 border-b">Applicant</th>
-						<th class="py-2 px-4 border-b">Status</th>
-						<th class="py-2 px-4 border-b">Submission Date</th>
-						<th class="py-2 px-4 border-b">Priority Score</th>
-						<th class="py-2 px-4 border-b">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for application in applications %}
-					<tr class="hover:bg-gray-50">
-						<td class="py-2 px-4 border-b">{{ application.application_number }}</td>
-						<td class="py-2 px-4 border-b">
-							{{ application.applicant.first_name }} {{ application.applicant.last_name }}
-						</td>
-						<td class="py-2 px-4 border-b">
-							<span
-								class="px-2 py-1 rounded-full text-xs {% if application.status == 'SUBMITTED' %}bg-blue-100 text-blue-800 {% elif application.status == 'IN_QUEUE' %}bg-indigo-100 text-indigo-800 {% elif application.status == 'HOUSING_OFFERED' %}bg-orange-100 text-orange-800 {% elif application.status == 'ACCEPTED' %}bg-green-100 text-green-800 {% elif application.status == 'REJECTED_BY_MANAGER' or application.status == 'REJECTED_BY_APPLICANT' %}bg-red-100 text-red-800 {% elif application.status == 'EXPIRED' %}bg-gray-100 text-gray-800 {% endif %}"
-							>
-								{{ application.get_status_display }}
-							</span>
-						</td>
-						<td class="py-2 px-4 border-b">{{ application.submission_date|date:"M d, Y" }}</td>
-						<td class="py-2 px-4 border-b">{{ application.priority_score }}</td>
-						<td class="py-2 px-4 border-b">
-							<a href="{% url "applications:view-application" application.id %}">
-								<button class="text-blue-500 hover:text-blue-700">
-									<i class="fas fa-eye mr-1"></i>
-									View
-								</button>
-							</a>
-						</td>
-					</tr>
-					{% empty %}
-					<tr>
-						<td class="py-4 px-4 border-b text-center" colspan="7">No applications found</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
-		<div class="flex justify-between items-center mt-4">
-			<span>Total records: {{ applications.count }}</span>
-			<div class="flex items-center space-x-2">
-				{% if applications.has_previous %}
-				<a href="?page={{ applications.previous_page_number }}" class="px-3 py-1 border rounded">Previous</a>
-				{% endif %}
-				<span class="px-3 py-1">Page {{ applications.number }} of {{ applications.paginator.num_pages }}</span>
-				{% if applications.has_next %}
-				<a href="?page={{ applications.next_page_number }}" class="px-3 py-1 border rounded">Next</a>
-				{% endif %}
-			</div>
-		</div>
-
-	</div>
+<!-- Applications List -->
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-lg font-semibold mb-4">Applications List</h2>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="py-2 px-4 border-b">Application #</th>
+                    <th class="py-2 px-4 border-b">Applicant</th>
+                    <th class="py-2 px-4 border-b">Status</th>
+                    <th class="py-2 px-4 border-b">Submission Date</th>
+                    <th class="py-2 px-4 border-b">Priority Score</th>
+                    <th class="py-2 px-4 border-b">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                <tr class="hover:bg-gray-50">
+                    <td class="py-2 px-4 border-b">{{ application.application_number }}</td>
+                    <td class="py-2 px-4 border-b">
+                        {{ application.applicant.first_name }} {{ application.applicant.last_name }}
+                    </td>
+                    <td class="py-2 px-4 border-b">
+                        <span
+                            class="px-2 py-1 rounded-full text-xs {% if application.status == 'SUBMITTED' %}bg-blue-100 text-blue-800 {% elif application.status == 'IN_QUEUE' %}bg-indigo-100 text-indigo-800 {% elif application.status == 'HOUSING_OFFERED' %}bg-orange-100 text-orange-800 {% elif application.status == 'ACCEPTED' %}bg-green-100 text-green-800 {% elif application.status == 'REJECTED_BY_MANAGER' or application.status == 'REJECTED_BY_APPLICANT' %}bg-red-100 text-red-800 {% elif application.status == 'EXPIRED' %}bg-gray-100 text-gray-800 {% endif %}"
+                        >
+                            {{ application.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="py-2 px-4 border-b">{{ application.submission_date|date:"M d, Y" }}</td>
+                    <td class="py-2 px-4 border-b">{{ application.priority_score }}</td>
+                    <td class="py-2 px-4 border-b">
+                        <a href="{% url "applications:view-application" application.id %}">
+                            <button class="text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-eye mr-1"></i>
+                                View
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td class="py-4 px-4 border-b text-center" colspan="7">No applications found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="flex justify-between items-center mt-4">
+        <span>Total records: {{ applications.paginator.count }}</span>
+        <div class="flex items-center space-x-2">
+            {% if applications.has_previous %}
+            <a href="?{{ request.GET.urlencode }}&page={{ applications.previous_page_number }}" class="px-3 py-1 border rounded">Previous</a>
+            {% endif %}
+            <span class="px-3 py-1">Page {{ applications.number }} of {{ applications.paginator.num_pages }}</span>
+            {% if applications.has_next %}
+            <a href="?{{ request.GET.urlencode }}&page={{ applications.next_page_number }}" class="px-3 py-1 border rounded">Next</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
 </div>
 {% endblock %}
