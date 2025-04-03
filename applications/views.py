@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .forms import ApplicantDataForm, FamilyDataForm
 from django.shortcuts import render
-from .models import Application, ApplicationHistory, ApplicationDocument
+from .models import Application, ApplicationHistory
 from housing_units.models import HousingUnit, HousingAllocation
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
@@ -22,28 +22,27 @@ def home(request):
     return render(request, 'info.html')
 
 def statistics(request):
-    # Get current date
     today = timezone.now()
     
-    # Calculate statistics
     total_applications = Application.objects.count()
     total_queue_members = Application.objects.filter(status='IN_QUEUE').count()
     total_users = User.objects.count()
     
-    # Last month stats
     last_month = today - timedelta(days=30)
     last_month_applications = Application.objects.filter(
         submission_date__gte=last_month
     ).count()
+    last_month_queue = Application.objects.filter(
+        submission_date__gte=last_month,
+        status='IN_QUEUE'
+    ).count()
     
-    # Last week growth
     last_week = today - timedelta(days=7)
     last_week_users = User.objects.filter(
         date_joined__gte=last_week
     ).count()
     week_growth = (last_week_users / total_users * 100) if total_users > 0 else 0
     
-    # Application data for table
     def get_application_data(days):
         start_date = today - timedelta(days=days)
         applications = Application.objects.filter(
@@ -52,7 +51,7 @@ def statistics(request):
             select={'date': "date(submission_date)"}
         ).values('date').annotate(
             total=Count('id'),
-            processed=Count('id', filter=Q(status__in=['ACCEPTED', 'REJECTED_BY_APPLICANT', 'REJECTED_BY_MANAGER']))
+            processed=Count('id', filter=~Q(status__in=['SUBMITTED', 'IN_QUEUE']))
         ).order_by('date')
         
         return list(applications)
@@ -62,6 +61,7 @@ def statistics(request):
         'total_queue_members': total_queue_members,
         'total_users': total_users,
         'last_month_applications': last_month_applications,
+        'last_month_queue': last_month_queue,
         'week_growth': week_growth,
         'table_data': {
             'month': get_application_data(30),

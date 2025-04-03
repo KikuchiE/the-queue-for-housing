@@ -32,7 +32,14 @@
 							<i class="fas fa-user-circle text-2xl"></i>
 							{% endif %}
 						</a>
-						<a href="/accounts/logout" class="bg-red-400 p-2 rounded-md text-white ml-4">Logout</a>
+						{% comment %} <a href="/accounts/logout" class="bg-red-400 p-2 rounded-md text-white ml-4">Logout</a> {% endcomment %}
+						{% comment %} <form action="{% url "users:logout" %}" method="post">
+							{% csrf_token %}
+							<button class="bg-red-400 p-2 rounded-md text-white ml-4" type="submit">Logout</button>
+						</form> {% endcomment %}
+						<button id="logout-btn" class="bg-red-400 p-2 rounded-md text-white ml-4">
+							Logout
+						</button>
 					</div>
 					{% else %}
 					<a href="/accounts/login">Login</a>
@@ -110,5 +117,25 @@ u
 			{% endif %}
 		</div>
 		{% block extra_js %}{% endblock %}
+		<script>
+			document.getElementById("logout-btn").addEventListener("click", async function(event) {
+				event.preventDefault();
+				
+				const response = await fetch("{% url 'users:logout' %}", {
+					method: "POST",
+					headers: {
+						"X-CSRFToken": "{{ csrf_token }}",
+						"Content-Type": "application/json"
+					},
+					credentials: "include"
+				});
+		
+				if (response.ok) {
+					window.location.href = "{% url 'users:login' %}"; // Redirect to login page
+				} else {
+					alert("Logout failed");
+				}
+			});
+		</script>
 	</body>
 </html>

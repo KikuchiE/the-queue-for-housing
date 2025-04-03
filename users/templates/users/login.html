@@ -1,36 +1,79 @@
-{% extends "users/base.html" %} {% block content %}
-<div class="w-[500px]  flex justify-center items-center h-screen">
-	<div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md border border-gray-300">
-		<form method="POST" class="space-y-4">
-			{% csrf_token %}
-			<h3 class="text-2xl font-semibold text-center">Login</h3>
-			{{ form.as_p }}
-			<div class="mt-4">
-				<button
-					class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-300"
-					type="submit"
-				>
-					Submit
-				</button>
-			</div>
-			{% if messages %} {% for message in messages %}
-			<div class="p-1 mb-1 text-red-500 rounded-lg">{{ message }}</div>
-			{% endfor %} {% endif %}
-			<div class="mt-2 text-center">
-				<small>
-					{% comment %}
-					<a class="text-red-600 hover:underline" href="{% url 'users:password_reset' %}">Forgot Password?</a>
-					{% endcomment %}
-				</small>
-			</div>
-		</form>
-		<div class="border-t pt-3 mt-4 text-center">
-			<small class="text-gray-600">
-				New Here?
-				<a class="text-blue-600 hover:underline" href="{% url 'users:signup' %}">Create account</a>
-			</small>
-		</div>
-	</div>
+{% extends "users/base.html" %}
+{% block content %}
+<div class="w-[500px] flex justify-center items-center h-screen">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md border border-gray-300">
+        <form id="login-form" class="space-y-4">
+            {% csrf_token %}
+            <h3 class="text-2xl font-semibold text-center">Login</h3>
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <div class="mt-4">
+                <button id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-300" type="button">
+                    Submit
+                </button>
+            </div>
+            <div id="error-messages" class="text-red-500 text-sm mt-2"></div>
+        </form>
+        <div class="border-t pt-3 mt-4 text-center">
+            <small class="text-gray-600">
+                New Here?
+                <a class="text-blue-600 hover:underline" href="{% url 'users:signup' %}">Create account</a>
+            </small>
+        </div>
+    </div>
 </div>
 
+<script>
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+        event.preventDefault();  // Prevent default form submission
+    });
+
+    document.getElementById('submit-btn').addEventListener('click', function() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorContainer = document.getElementById('error-messages');
+        errorContainer.innerHTML = '';  // Clear previous error messages
+
+        // Get CSRF token from cookies
+        const csrftoken = document.cookie.split('; ').find(row => row.startsWith('csrftoken'))?.split('=')[1];
+
+        fetch('{% url "users:login" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ email: email, password: password })
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json().then(data => {
+                    // On successful login, redirect to the home page or another desired URL
+                    window.location.href = '{% url "applications:home" %}';
+                });
+            } else {
+                return response.json().then(data => {
+                    // Display error messages from the API
+                    if (data.detail) {
+                        errorContainer.innerHTML = `<p>${data.detail}</p>`;
+                    } else {
+                        for (const [key, value] of Object.entries(data)) {
+                            errorContainer.innerHTML += `<p>${key}: ${value}</p>`;
+                        }
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            errorContainer.innerHTML = '<p>An error occurred. Please try again.</p>';
+            console.error('Error:', error);
+        });
+    });
+</script>
 {% endblock %}

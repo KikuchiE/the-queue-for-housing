@@ -18,7 +18,7 @@
             <div>
                 <h2 class="text-2xl font-bold">{{ total_queue_members|intcomma }}</h2>
                 <p class="text-sm">TOTAL QUEUE MEMBERS</p>
-                <p class="text-xs mt-2">+ {{ last_month_applications|intcomma }} Last month</p>
+                <p class="text-xs mt-2">+ {{ last_month_queue|intcomma }} Last month</p>
             </div>
             <i class="fas fa-users text-4xl"></i>
         </div>
@@ -53,11 +53,15 @@
     </div>
 </div>
 
+{{ table_data.month|json_script:"month-data" }}
+{{ table_data.3months|json_script:"3months-data" }}
+{{ table_data.6months|json_script:"6months-data" }}
+
 <script>
     const data = {
-        'month': {{ table_data.month|json_script:"month-data" }},
-        '3months': {{ table_data.3months|json_script:"3months-data" }},
-        '6months': {{ table_data.6months|json_script:"6months-data" }},
+        'month': JSON.parse(document.getElementById('month-data').textContent),
+        '3months': JSON.parse(document.getElementById('3months-data').textContent),
+        '6months': JSON.parse(document.getElementById('6months-data').textContent),
     };
 
     function updateTable(period, btn) {
@@ -65,9 +69,15 @@
         tableBody.innerHTML = '';
 
         data[period].forEach(row => {
+            const date = new Date(row.date);
+            const formattedDate = date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td class="py-2 px-4">${row.date}</td>
+                <td class="py-2 px-4">${formattedDate}</td>
                 <td class="py-2 px-4">${row.total}</td>
                 <td class="py-2 px-4">${row.processed}</td>
             `;
@@ -83,7 +93,6 @@
         btn.classList.remove('bg-gray-200', 'text-gray-700');
     }
 
-    // Initial table load
     updateTable('month', document.querySelector('.filter-btn.active'));
 </script>
 {% endblock %}

@@ -93,12 +93,13 @@ from django.shortcuts import render
 from .serializers import UserSerializer, SignupSerializer, LoginSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from django.contrib.auth.decorators import login_required
-from .forms import UserLoginForm
+from django.urls import reverse
 
 class SignupView(APIView):
     permission_classes = [AllowAny]
-    
+    def get(self, request):
+        return render(request, "users/signup.html")
+
     @swagger_auto_schema(
         request_body=SignupSerializer,
         responses={
@@ -120,6 +121,9 @@ class SignupView(APIView):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
+    def get(self, request):
+        return render(request, "users/login.html")
+
     
     @swagger_auto_schema(
         request_body=LoginSerializer,
@@ -129,9 +133,6 @@ class LoginView(APIView):
         },
         operation_description="Login a user"
     )
-    def get(self, request):
-        form = UserLoginForm()
-        return render(request, "users/login.html", {"form": form})
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -157,11 +158,7 @@ class LogoutView(APIView):
         },
         operation_description="Logout current user"
     )
-    def get(self, request):
-        logout(request)
-        return Response({
-            'message': 'Successfully logged out'
-        }, status=status.HTTP_200_OK)
+
     def post(self, request):
         logout(request)
         return Response({
@@ -207,6 +204,7 @@ class DeleteAccountView(APIView):
         },
         operation_description="Delete user account"
     )
+    
     def post(self, request):
         user = request.user
         user.delete()

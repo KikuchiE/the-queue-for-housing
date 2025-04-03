@@ -1,121 +1,134 @@
 {% extends "users/base.html" %}
 {% block content %}
 <div class="max-w-md w-[500px] mx-auto bg-white p-6 rounded-lg shadow-md border border-gray-300">
-    <form method="POST" class="space-y-4">
+    <form id="signup-form" class="space-y-4">
         {% csrf_token %}
         <h3 class="text-2xl font-semibold text-center">Signup</h3>
-        
-        {# First Name Field #}
+        <div id="non_field_errors" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative hidden" role="alert"></div>
+
+        <!-- First Name -->
         <div>
-            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-            {{ form.first_name }}
-            {% if form.first_name.errors %}
-                <div class="text-red-600 text-sm mt-1">
-                    {% for error in form.first_name.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
+            <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+            <input type="text" id="first_name" name="first_name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <div id="first_name_error" class="error-message text-red-600 text-sm mt-1"></div>
         </div>
 
-        {# Last Name Field #}
+        <!-- Last Name -->
         <div>
-            <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-            {{ form.last_name }}
-            {% if form.last_name.errors %}
-                <div class="text-red-600 text-sm mt-1">
-                    {% for error in form.last_name.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
+            <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+            <input type="text" id="last_name" name="last_name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <div id="last_name_error" class="error-message text-red-600 text-sm mt-1"></div>
         </div>
 
-        {# Email Field #}
+        <!-- Email -->
         <div>
-            <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            {{ form.email }}
-            {% if form.email.errors %}
-                <div class="text-red-600 text-sm mt-1">
-                    {% for error in form.email.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <div id="email_error" class="error-message text-red-600 text-sm mt-1"></div>
         </div>
 
-        {# IIN Field #}
+        <!-- IIN -->
         <div>
-            <label for="{{ form.iin.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">IIN (Individual Identification Number)</label>
-            {{ form.iin }}
-            {% if form.iin.errors %}
-                <div class="text-red-600 text-sm mt-1">
-                    {% for error in form.iin.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
+            <label for="iin" class="block text-sm font-medium text-gray-700 mb-1">IIN (Individual Identification Number)</label>
+            <input type="text" id="iin" name="iin" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <div id="iin_error" class="error-message text-red-600 text-sm mt-1"></div>
         </div>
 
-        {# Phone Number Field #}
+        <!-- Phone Number -->
         <div>
-            <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-            {{ form.phone_number }}
-            {% if form.phone_number.errors %}
-                <div class="text-red-600 text-sm mt-1">
-                    {% for error in form.phone_number.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
+            <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <input type="tel" id="phone_number" name="phone_number" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <div id="phone_number_error" class="error-message text-red-600 text-sm mt-1"></div>
         </div>
 
-        {# Password Field #}
+        <!-- Password -->
         <div>
-            <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            {{ form.password }}
-            {% if form.password.errors %}
-                <div class="text-red-600 text-sm mt-1">
-                    {% for error in form.password.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <div id="password_error" class="error-message text-red-600 text-sm mt-1"></div>
         </div>
 
-        {# Confirm Password Field #}
+        <!-- Confirm Password -->
         <div>
-            <label for="{{ form.confirm_password.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-            {{ form.confirm_password }}
-            {% if form.confirm_password.errors %}
-                <div class="text-red-600 text-sm mt-1">
-                    {% for error in form.confirm_password.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
+            <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <div id="confirm_password_error" class="error-message text-red-600 text-sm mt-1"></div>
         </div>
-
-        {# Non-field Errors #}
-        {% if form.non_field_errors %}
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                {% for error in form.non_field_errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
 
         <div class="mt-4">
-            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-300" type="submit">
+            <button id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-300" type="submit">
                 Submit
             </button>
         </div>
     </form>
-    
+
     <div class="border-t pt-3 mt-4 text-center">
         <small class="text-gray-600">
             Already have an account? <a class="text-blue-600 hover:underline" href="{% url 'users:login' %}">Login here</a>
         </small>
     </div>
 </div>
+
+<script>
+document.getElementById('signup-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Clear previous errors
+    document.getElementById('non_field_errors').innerHTML = '';
+    document.getElementById('non_field_errors').classList.add('hidden');
+    document.querySelectorAll('.error-message').forEach(el => el.innerHTML = '');
+
+    // Collect form data
+    const data = {
+        first_name: document.getElementById('first_name').value,
+        last_name: document.getElementById('last_name').value,
+        email: document.getElementById('email').value,
+        iin: document.getElementById('iin').value,
+        phone_number: document.getElementById('phone_number').value,
+        password: document.getElementById('password').value,
+        confirm_password: document.getElementById('confirm_password').value,
+    };
+
+    // Get CSRF token from cookie
+    const csrftoken = document.cookie.split('; ').find(row => row.startsWith('csrftoken'))?.split('=')[1];
+
+    // Send Fetch request to DRF endpoint
+    fetch('{% url "users:signup" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (response.status === 201) {
+            // Success: redirect to home page
+            window.location.href = '{% url "applications:home" %}';
+        } else {
+            // Error: parse and display errors
+            return response.json().then(data => {
+                let nonFieldErrors = '';
+                for (const [key, value] of Object.entries(data)) {
+                    const errorEl = document.getElementById(`${key}_error`);
+                    if (errorEl) {
+                        errorEl.innerHTML = value.join('<br>');
+                    } else {
+                        nonFieldErrors += `${key}: ${value.join(', ')}<br>`;
+                    }
+                }
+                if (nonFieldErrors) {
+                    document.getElementById('non_field_errors').innerHTML = nonFieldErrors;
+                    document.getElementById('non_field_errors').classList.remove('hidden');
+                }
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('non_field_errors').innerHTML = 'An error occurred. Please try again.';
+        document.getElementById('non_field_errors').classList.remove('hidden');
+    });
+});
+</script>
 {% endblock %}
