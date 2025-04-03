@@ -15,12 +15,11 @@ class HousingUnit(models.Model):
     total_area = models.DecimalField(max_digits=6, decimal_places=2)
     rooms_count = models.PositiveSmallIntegerField()
     status = models.CharField(max_length=20, choices=UNIT_STATUS, default='AVAILABLE')
-    is_accessible = models.BooleanField(default=False)
+    # is_accessible = models.BooleanField(default=False)
     # monthly_rent = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     
     has_elevator = models.BooleanField(default=False)
     has_heating = models.BooleanField(default=True)
-    4
     last_inspection_date = models.DateField(null=True, blank=True)
     next_available_date = models.DateField(null=True, blank=True)
     
@@ -30,11 +29,10 @@ class HousingUnit(models.Model):
 class HousingAllocation(models.Model):
     STATUS_CHOICES = [
         ('OFFERED', 'Offered'),
-        ('ACCEPTED', 'Accepted'),
-        ('DECLINED', 'Declined'),
+        # ('ACCEPTED', 'Accepted'),
+        # ('DECLINED', 'Declined'),
         ('EXPIRED', 'Offer Expired'),
         ('ACTIVE', 'Tenancy Active'),
-        ('TERMINATED', 'Tenancy Terminated'),
     ]
     
     application = models.ForeignKey('applications.Application', on_delete=models.CASCADE)
@@ -43,10 +41,10 @@ class HousingAllocation(models.Model):
     offer_date = models.DateField(auto_now_add=True)
     # response_deadline = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='OFFERED')
-    rejection_reason = models.TextField(null=True, blank=True)
+    # rejection_reason = models.TextField(null=True, blank=True)
 
-    response_date = models.DateField(null=True, blank=True)
-    tenancy_start_date = models.DateField(null=True, blank=True)
+    # response_date = models.DateField(null=True, blank=True)
+    # tenancy_start_date = models.DateField(null=True, blank=True)
     tenancy_end_date = models.DateField(null=True, blank=True)
     
     notes = models.TextField(blank=True)

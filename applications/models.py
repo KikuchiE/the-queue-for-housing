@@ -8,8 +8,8 @@ class Application(models.Model):
         ('SUBMITTED', 'Submitted'),
         ('IN_QUEUE', 'In Queue'),
         ('HOUSING_OFFERED', 'Housing Offered'),
-        ('ACCEPTED', 'Accepted'), 
-        ('REJECTED_BY_APPLICANT', 'Rejected by Applicant'), 
+        # ('ACCEPTED', 'Accepted'), 
+        # ('REJECTED_BY_APPLICANT', 'Rejected by Applicant'), 
         ('REJECTED_BY_MANAGER', 'Rejected by Manager'),
         # ('CANCELLED', 'Cancelled'),
     ]
@@ -18,6 +18,7 @@ class Application(models.Model):
     is_for_ward = models.BooleanField(default=False)
     notes = models.TextField(blank=True, null=True)
     rejection_reason = models.TextField(blank=True, null=True)
+    document_renewal = models.BooleanField(default=False)
     application_number = models.CharField(max_length=20, unique=True)
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='SUBMITTED')
     submission_date = models.DateTimeField(auto_now_add=True)

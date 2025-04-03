@@ -35,7 +35,7 @@ def create_housing_unit(request):
                 total_area=form_data.get('total_area'),
                 rooms_count=form_data.get('rooms_count'),
                 status=form_data.get('status'),
-                is_accessible=form_data.get('is_accessible') == 'on',
+                # is_accessible=form_data.get('is_accessible') == 'on',
                 has_elevator=form_data.get('has_elevator') == 'on',
                 has_heating=form_data.get('has_heating') == 'on',
                 next_available_date=form_data.get('next_available_date') or None
@@ -106,7 +106,7 @@ def offer_housing(request, application_id):
             notification_type='STATUS_CHANGE',
             title='Application Status Updated',
             message=f'Your application status has changed to "Housing Offered".',
-            status='SENT',  # Since we’re just storing it
+            status='UNREAD',
             sent_at=timezone.now()
         )
 

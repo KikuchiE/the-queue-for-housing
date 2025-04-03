@@ -48,7 +48,7 @@
 						<td class="py-2 px-4 border-b">
 							<div class="flex space-x-2">
 								<a href="{% url 'applications:view-application' application.id %}" class="text-blue-500 hover:underline">View</a>
-								{% if application.status == 'SUBMITTED' or application.status == 'UNDER_REVIEW' %}
+								{% if application.status == 'SUBMITTED' or application.document_renewal %}
 								<a href="{% url 'applications:edit-application' application.id %}" class="text-yellow-500 hover:underline">Edit</a>
 								{% endif %}
 							</div>

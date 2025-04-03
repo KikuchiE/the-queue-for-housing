@@ -247,6 +247,7 @@ def get_application_data(request):
 def view_application(request, application_id):
     application = get_object_or_404(Application, id=application_id)
     current_user = User.objects.get(email=request.user.email)
+    housing_allocation = HousingAllocation.objects.filter(application=application).first()
 
     if (application.applicant != request.user) and not (current_user.is_administrator or current_user.is_staff):
         raise Http404("This page doesn't exist")
@@ -268,6 +269,7 @@ def view_application(request, application_id):
         'documents': application.documents.all(),
         'available_housing_units': HousingUnit.objects.filter(status='AVAILABLE'),
         'history': history_data,
+        'housing_allocation': housing_allocation,
     })
 
 def queue_members(request):
@@ -275,7 +277,7 @@ def queue_members(request):
     form = QueueSearchForm(request.GET or None)
     
     # Annotate queue number based on priority score ranking
-    queryset = Application.objects.filter(status='SUBMITTED').annotate(
+    queryset = Application.objects.filter(status='IN_QUEUE').annotate(
         queue_number=Window(
             expression=RowNumber(),
             order_by=F('priority_score').desc()
@@ -354,10 +356,24 @@ def reject_application(request, application_id):
     
     if request.method == 'POST':
         rejection_reason = request.POST.get('rejection_reason')
+        document_renewal = request.POST.get('document_renewal')
         
         application.status = 'REJECTED_BY_MANAGER'
         application.rejection_reason = rejection_reason
         application.save()
+
+        if document_renewal:
+            application.document_renewal = True
+            application.save()
+            Notification.objects.create(
+                application=application,
+                notification_type='DOCUMENT_RENEWAL',
+                title='Document Renewal Required',
+                message='Your application requires document renewal.',
+                status='UNREAD',
+                sent_at=timezone.now()
+            )
+        # Create history record
         
         ApplicationHistory.objects.create(
             application=application,

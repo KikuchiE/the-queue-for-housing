@@ -142,6 +142,7 @@ def save_application_with_documents(applicant_form, family_form, submission_form
 
     # Save notes from submission form
     application.notes = submission_form.cleaned_data['notes']
+    application.status = 'SUBMITTED'
     application.save()
 
     # Handle documents
