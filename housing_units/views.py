@@ -8,6 +8,7 @@ from .models import HousingUnit, HousingAllocation
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required
+from notifications.models import Notification
 
 # Create your views here.
 
@@ -98,7 +99,17 @@ def offer_housing(request, application_id):
             # response_deadline=timezone.now() + timedelta(days=7),
             status='OFFERED'
         )
-        
+
+        # Create notification
+        Notification.objects.create(
+            application=application,
+            notification_type='STATUS_CHANGE',
+            title='Application Status Updated',
+            message=f'Your application status has changed to "Housing Offered".',
+            status='SENT',  # Since we’re just storing it
+            sent_at=timezone.now()
+        )
+
         # Update application status
         application.status = 'HOUSING_OFFERED'
         application.save()

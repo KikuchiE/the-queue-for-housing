@@ -8,13 +8,11 @@ class Notification(models.Model):
         ('DOCUMENT_RENEWAL', 'Document Renewal'),
         ('QUEUE_UPDATE', 'Queue Position Update'),
         ('HOUSING_OFFER', 'Housing Offer'),
-        ('GENERAL', 'General Notification'),
+        # ('GENERAL', 'General Notification'),
     ]
 
     STATUS_CHOICES = [
-        ('PENDING', 'Pending'),
-        ('SENT', 'Sent'),
-        ('FAILED', 'Failed'),
+        ('UNREAD', 'Unread'),
         ('READ', 'Read'),
     ]
 
@@ -24,7 +22,7 @@ class Notification(models.Model):
     title = models.CharField(max_length=100)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='UNREAD')
     sent_at = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):

@@ -71,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Form validation
     function validateCurrentSection(sectionIndex) {
-        // Simplified validation - could be enhanced as needed
         const currentSection = sections[sectionIndex];
         const requiredFields = currentSection.querySelectorAll('input[required], select[required], textarea[required]');
         
@@ -100,63 +99,20 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
     
-    // Fetch application summary for the final section (if available)
-    function fetchApplicationSummary() {
-        // This would typically be an AJAX call to get current application data
-        // For now, let's just populate with sample data
-        document.getElementById('summary-application-number').textContent = 'APP000123';
-        document.getElementById('summary-status').textContent = 'SUBMITTED';
-        document.getElementById('summary-priority-score').textContent = 'Calculating...';
-        document.getElementById('summary-queue-position').textContent = 'N/A';
-        
-        // In a real implementation, you'd make an AJAX call like:
-        /*
-        fetch('/api/application-summary/')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('summary-application-number').textContent = data.application_number;
-                document.getElementById('summary-status').textContent = data.status;
-                document.getElementById('summary-priority-score').textContent = data.priority_score;
-                document.getElementById('summary-queue-position').textContent = data.queue_position;
-                
-                // Populate history table
-                const historyTable = document.getElementById('history-table');
-                if (data.history && data.history.length > 0) {
-                    historyTable.innerHTML = '';
-                    data.history.forEach(entry => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td class="border p-2">${entry.change_date}</td>
-                            <td class="border p-2">${entry.previous_status}</td>
-                            <td class="border p-2">${entry.new_status}</td>
-                            <td class="border p-2">${entry.changed_by}</td>
-                        `;
-                        historyTable.appendChild(row);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching application summary:', error);
-            });
-        */
-    }
-    
-    // Handle special fields dependencies
-    
     // Toggle disability document and details based on checkbox
-    const disabilityCheckbox = document.getElementById('id_has_disability');
-    const disabilityDocDiv = document.getElementById('disability-document-div');
-    const disabilityDetailsDiv = document.getElementById('disability-details-div');
+    // const disabilityCheckbox = document.getElementById('id_has_disability');
+    // const disabilityDocDiv = document.getElementById('disability-document-div');
+    // const disabilityDetailsDiv = document.getElementById('disability-details-div');
     
-    if (disabilityCheckbox && disabilityDocDiv && disabilityDetailsDiv) {
-        function updateDisabilityFields() {
-            disabilityDocDiv.style.display = disabilityCheckbox.checked ? 'block' : 'none';
-            disabilityDetailsDiv.style.display = disabilityCheckbox.checked ? 'block' : 'none';
-        }
+    // if (disabilityCheckbox && disabilityDocDiv && disabilityDetailsDiv) {
+    //     function updateDisabilityFields() {
+    //         disabilityDocDiv.style.display = disabilityCheckbox.checked ? 'block' : 'none';
+    //         disabilityDetailsDiv.style.display = disabilityCheckbox.checked ? 'block' : 'none';
+    //     }
         
-        updateDisabilityFields(); // Initial state
-        disabilityCheckbox.addEventListener('change', updateDisabilityFields);
-    }
+    //     updateDisabilityFields();
+    //     disabilityCheckbox.addEventListener('change', updateDisabilityFields);
+    // }
     
     // Initialize form validation on submit
     const form = document.getElementById('application-form');

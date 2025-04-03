@@ -51,7 +51,7 @@ def update_profile(request):
         
         # Update user fields
         user.iin = request.POST.get('iin')
-        user.email = request.POST.get('email')
+        # user.email = request.POST.get('email')
         user.first_name = request.POST.get('first_name')
         user.last_name = request.POST.get('last_name')
         user.phone_number = request.POST.get('phone_number')

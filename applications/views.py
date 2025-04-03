@@ -8,17 +8,69 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.contrib import messages
 from users.models import User
+from notifications.models import Notification
 from .forms import ApplicantDataForm, FamilyDataForm, ApplicationSubmissionForm, QueueCheckForm, QueueSearchForm,save_application_with_documents
 from django.db.models import Window, F
 from django.db.models.functions import RowNumber
-
+from django.db.models import Count
+from datetime import timedelta
+from django.utils import timezone
+from django.db.models import Q
 
 # Create your views here.
 def home(request):
     return render(request, 'info.html')
 
 def statistics(request):
-    return render(request, 'statistics.html')
+    # Get current date
+    today = timezone.now()
+    
+    # Calculate statistics
+    total_applications = Application.objects.count()
+    total_queue_members = Application.objects.filter(status='IN_QUEUE').count()
+    total_users = User.objects.count()
+    
+    # Last month stats
+    last_month = today - timedelta(days=30)
+    last_month_applications = Application.objects.filter(
+        submission_date__gte=last_month
+    ).count()
+    
+    # Last week growth
+    last_week = today - timedelta(days=7)
+    last_week_users = User.objects.filter(
+        date_joined__gte=last_week
+    ).count()
+    week_growth = (last_week_users / total_users * 100) if total_users > 0 else 0
+    
+    # Application data for table
+    def get_application_data(days):
+        start_date = today - timedelta(days=days)
+        applications = Application.objects.filter(
+            submission_date__gte=start_date
+        ).extra(
+            select={'date': "date(submission_date)"}
+        ).values('date').annotate(
+            total=Count('id'),
+            processed=Count('id', filter=Q(status__in=['ACCEPTED', 'REJECTED_BY_APPLICANT', 'REJECTED_BY_MANAGER']))
+        ).order_by('date')
+        
+        return list(applications)
+
+    context = {
+        'total_applications': total_applications,
+        'total_queue_members': total_queue_members,
+        'total_users': total_users,
+        'last_month_applications': last_month_applications,
+        'week_growth': week_growth,
+        'table_data': {
+            'month': get_application_data(30),
+            '3months': get_application_data(90),
+            '6months': get_application_data(180),
+        }
+    }
+    
+    return render(request, 'statistics.html', context)
 
 def check_queue_number(request):
     if request.method == 'POST':
@@ -122,6 +174,44 @@ def create_application(request):
     }
     
     return render(request, 'create_application.html', context)
+
+
+@login_required
+def edit_application(request, application_id):
+    application = get_object_or_404(Application, id=application_id, applicant=request.user)
+    id_proof_document = application.documents.filter(document_type='ID_PROOF').first()
+    single_parent_document = application.documents.filter(document_type='SINGLE_PARENT_PROOF').first()
+    veteran_document = application.documents.filter(document_type='VETERAN_STATUS').first()
+    disability_document = application.documents.filter(document_type='DISABILITY_CERTIFICATE').first()
+
+    if request.method == 'POST':
+        applicant_form = ApplicantDataForm(request.POST, instance=application)
+        family_form = FamilyDataForm(request.POST, request.FILES, instance=application)
+        submission_form = ApplicationSubmissionForm(request.POST)
+        if all([applicant_form.is_valid(), family_form.is_valid(), submission_form.is_valid()]):
+            updated_application = save_application_with_documents(
+                applicant_form, family_form, submission_form, request.user, application=application
+            )
+            messages.success(request, 'Application updated successfully!')
+            return redirect('applications:view-application', application_id=updated_application.id)
+        else:
+            messages.error(request, 'Please correct the errors in the form.')
+    else:
+        applicant_form = ApplicantDataForm(instance=application)
+        family_form = FamilyDataForm(instance=application)
+        submission_form = ApplicationSubmissionForm(initial={'notes': application.notes})
+
+    context = {
+        'applicant_form': applicant_form,
+        'family_form': family_form,
+        'submission_form': submission_form,
+        'application': application,
+        'id_proof_document': id_proof_document,
+        'single_parent_document': single_parent_document,
+        'veteran_document': veteran_document,
+        'disability_document': disability_document,
+    }
+    return render(request, 'edit_application.html', context)
 
 @login_required
 def get_application_data(request):
@@ -231,23 +321,32 @@ def update_application_status(request, application_id, new_status):
     application = get_object_or_404(Application, id=application_id)
 
     if request.method == 'POST':
-        # notes = request.POST.get('notes')
-        
         # Update application status
-        application.status = new_status
-        application.save()
+        print('status updated')
+        print(application.status)
+        if application.status != new_status:
+            application.status = new_status
+            application.save()
+            Notification.objects.create(
+                application=application,
+                notification_type='STATUS_CHANGE',
+                title='Application Status Updated',
+                message=f'Your application status has changed to {new_status}.',
+                status='UNREAD',
+                sent_at=timezone.now()
+            )
         
-        # Create history record
-        ApplicationHistory.objects.create(
-            application=application,
-            previous_status=application.status,
-            new_status=new_status,
-            changed_by=request.user,
-            # notes=notes
-        )
-        
-        messages.success(request, 'Application status updated successfully.')
+            # Create history record
+            ApplicationHistory.objects.create(
+                application=application,
+                previous_status=application.status,
+                new_status=new_status,
+                changed_by=request.user,
+                # notes=notes
+            )
+            messages.success(request, 'Application status updated successfully.')
         return redirect('applications:view-application', application_id=application.id)
+    
 
 @login_required
 def reject_application(request, application_id):
@@ -256,12 +355,10 @@ def reject_application(request, application_id):
     if request.method == 'POST':
         rejection_reason = request.POST.get('rejection_reason')
         
-        # Update application status and reason
         application.status = 'REJECTED_BY_MANAGER'
         application.rejection_reason = rejection_reason
         application.save()
         
-        # Create application history entry
         ApplicationHistory.objects.create(
             application=application,
             previous_status=application.status,
@@ -269,5 +366,15 @@ def reject_application(request, application_id):
             changed_by=request.user,
             notes=rejection_reason
         )
+
+        Notification.objects.create(
+            application=application,
+            notification_type='STATUS_CHANGE',
+            title='Application Status Updated',
+            message=f'Your application status has changed to "Rejected".',
+            status='UNREAD',
+            sent_at=timezone.now()
+        )
+
         
         return redirect('applications:view-application', application_id=application.id)

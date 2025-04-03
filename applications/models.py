@@ -6,11 +6,9 @@ import os, uuid
 class Application(models.Model):
     STATUS_CHOICES = [
         ('SUBMITTED', 'Submitted'),
-        # ('UNDER_REVIEW', 'Under Review'),
-        # ('VERIFIED', 'Verified'),
         ('IN_QUEUE', 'In Queue'),
         ('HOUSING_OFFERED', 'Housing Offered'),
-        ('ACCEPTED', 'Accepted'),           # Принял ли заявитель данный ему дом
+        ('ACCEPTED', 'Accepted'), 
         ('REJECTED_BY_APPLICANT', 'Rejected by Applicant'), 
         ('REJECTED_BY_MANAGER', 'Rejected by Manager'),
         # ('CANCELLED', 'Cancelled'),
@@ -18,6 +16,7 @@ class Application(models.Model):
 
     applicant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
     is_for_ward = models.BooleanField(default=False)
+    notes = models.TextField(blank=True, null=True)
     rejection_reason = models.TextField(blank=True, null=True)
     application_number = models.CharField(max_length=20, unique=True)
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='SUBMITTED')

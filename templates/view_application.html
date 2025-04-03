@@ -5,15 +5,24 @@
 			<h1 class="text-2xl font-bold text-gray-800">Application Details</h1>
 			{% if application.status == 'SUBMITTED' or application.status == 'UNDER_REVIEW' %}
 			<a
-				href=""
+				href="{% url 'applications:edit-application' application.id %}"
 				class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
 			>
 				Edit Application
 			</a>
 			{% endif %}
 		</div>
-
+		
+		<!-- Rejection Reason-->
+		{% if application.status == 'REJECTED_BY_MANAGER' or application.status == 'REJECTED_BY_APPLICANT' %}
+		<div class="bg-red-50 p-4 rounded-lg">
+			<h2 class="text-xl font-semibold mb-4 border-b pb-2">Rejection Reason</h2>
+			<p class="text-red-600">{{ application.rejection_reason }}</p>
+		</div>
+		{% endif %}
+		
 		<div class="grid md:grid-cols-2 gap-6">
+			
 			<!-- Application Overview -->
 			<div class="bg-gray-50 p-4 rounded-lg">
 				<h2 class="text-xl font-semibold mb-4 border-b pb-2">Application Overview</h2>
@@ -175,29 +184,32 @@
 		<div class="bg-gray-50 p-4 rounded-lg mt-6">
 			<h2 class="text-xl font-semibold mb-4 border-b pb-2">Application Actions</h2>
 			<div class="flex justify-between">
+				<!-- Cancel Application -->
 				<div class="mt-4">
-					<a
+					{% comment %} <a
 						href="{% url 'applications:view-application' application.id %}"
 						class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
 					>
-						Delete
-					</a>
+						Cancel
+					</a> {% endcomment %}
 				</div>
 				{% if user.is_staff or user.is_administrator %}
 				<div class="mt-4 flex space-x-4">
 					{% if application.status == 'SUBMITTED' %}
-					<button 
-						onclick="openRejectModal()"
-						class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition"
-					>
-						Reject
-					</button>
-					<button 
-						onclick="addToQueue()"
-						class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
-					>
-						Add to Queue
-					</button>
+					<div>
+						<button 
+							onclick="openRejectModal()"
+							class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition"
+							>
+							Reject
+						</button>
+					</div>
+					<form action="{% url 'applications:update-application-status' application.id 'IN_QUEUE' %}" method="POST">
+						{% csrf_token %}
+						<button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition" type="submit">
+							Add to Queue
+						</button>
+					</form>	
 					{% elif application.status == 'IN_QUEUE' %}
 					<button 
 						onclick="openHousingUnitsModal()"
@@ -327,11 +339,6 @@
 
 	function closeRejectModal() {
 		document.getElementById('rejectModal').classList.add('hidden');
-	}
-
-	function addToQueue() {
-		// You'll need to implement the add to queue functionality
-		window.location.href = "{% url 'applications:update-application-status' application.id 'IN_QUEUE' %}";
 	}
 
 	function openHousingUnitsModal() {
