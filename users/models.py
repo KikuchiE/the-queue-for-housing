@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.utils import timezone
+import uuid
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -49,7 +51,45 @@ class User(AbstractBaseUser, PermissionsMixin):
     # get full name
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
-    
+
+
+# class TelegramUser(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     telegram_id = models.CharField(max_length=50, unique=True)
+
+#     def __str__(self):
+#         return f"{self.user.username} - Telegram ID: {self.telegram_id}"
+
+class TelegramUser(models.Model):
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='telegram_user'
+    )
+    telegram_id = models.BigIntegerField(unique=True)
+
+    def __str__(self):
+        return f"TelegramUser for {self.user.get_full_name()}"
+
+class TelegramConnectionToken(models.Model):
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE
+    )
+    token = models.CharField(
+        max_length=36, 
+        unique=True, 
+        default=uuid.uuid4().hex
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_used = models.BooleanField(default=False)
+
+    def is_valid(self):
+        """Check if the token is unused and not older than 10 minutes."""
+        return not self.is_used and (timezone.now() - self.created_at).total_seconds() < 600
+
+    def __str__(self):
+        return f"Token for {self.user.get_full_name()}"
 
 # from django.db import models
 # from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
