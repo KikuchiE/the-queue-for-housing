@@ -53,36 +53,35 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.first_name} {self.last_name}"
 
 
-# class TelegramUser(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-#     telegram_id = models.CharField(max_length=50, unique=True)
-
-#     def __str__(self):
-#         return f"{self.user.username} - Telegram ID: {self.telegram_id}"
-
 class TelegramUser(models.Model):
-    user = models.OneToOneField(
-        User, 
-        on_delete=models.CASCADE,
-        related_name='telegram_user'
-    )
-    telegram_id = models.BigIntegerField(unique=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    telegram_id = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
-        return f"TelegramUser for {self.user.get_full_name()}"
+        return f"{self.user.username} - Telegram ID: {self.telegram_id}"
+
+# class TelegramUser(models.Model):
+#     user = models.OneToOneField(
+#         User, 
+#         on_delete=models.CASCADE,
+#         related_name='telegram_user'
+#     )
+#     telegram_id = models.BigIntegerField(unique=True)
+
+#     def __str__(self):
+#         return f"TelegramUser for {self.user.get_full_name()}"
+
 
 class TelegramConnectionToken(models.Model):
-    user = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE
-    )
-    token = models.CharField(
-        max_length=36, 
-        unique=True, 
-        default=uuid.uuid4().hex
-    )
+    user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE)
+    token = models.CharField(max_length=36, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
+
+    def __init__(self, *args, **kwargs):
+        if 'token' not in kwargs:
+            kwargs['token'] = uuid.uuid4().hex
+        super().__init__(*args, **kwargs)
 
     def is_valid(self):
         """Check if the token is unused and not older than 10 minutes."""
@@ -90,39 +89,3 @@ class TelegramConnectionToken(models.Model):
 
     def __str__(self):
         return f"Token for {self.user.get_full_name()}"
-
-# from django.db import models
-# from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-
-# class UserManager(BaseUserManager):
-#     def create_user(self, password=None, **extra_fields):
-#         extra_fields.setdefault('is_active', True)
-#         user = self.model(**extra_fields)
-#         user.set_password(password)
-#         user.save(using=self._db)
-#         return user
-    
-#     def create_superuser(self, password=None, **extra_fields):
-#         extra_fields.setdefault('is_staff', True)
-#         extra_fields.setdefault('is_superuser', True)
-#         return self.create_user(password, **extra_fields)
-
-# class User(AbstractBaseUser, PermissionsMixin):
-#     iin = models.CharField(max_length=12, unique=True, verbose_name="Individual Identification Number", blank=True, null=True)
-#     phone = models.CharField(max_length=15, blank=True, null=True)
-#     email = models.EmailField(max_length=255, unique=True)
-#     first_name = models.CharField(max_length=255, blank=True)
-#     last_name = models.CharField(max_length=255, blank=True)
-#     middle_name = models.CharField(max_length=255, blank=True, null=True)
-    
-#     is_active = models.BooleanField(default=True)
-#     is_staff = models.BooleanField(default=False)
-#     is_admin = models.BooleanField(default=False)
-
-#     objects = UserManager()
-    
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = []
-
-#     def __str__(self):
-#         return self.email
