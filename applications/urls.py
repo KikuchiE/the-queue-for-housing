@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+
 app_name = 'applications'
 
 urlpatterns = [
@@ -16,4 +17,6 @@ urlpatterns = [
     # path('my-application/<int:application_id>/edit/', views.edit_application, name='edit-application'),
     path('application/update-status/<int:application_id>/<str:new_status>', views.update_application_status, name='update-application-status'),
     
+    ## api
+    path('api/check-queue/', views.QueueCheckAPIView.as_view(), name='api_check_queue'),    
 ]

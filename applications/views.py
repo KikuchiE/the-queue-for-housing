@@ -394,3 +394,77 @@ def reject_application(request, application_id):
 
         
         return redirect('applications:view-application', application_id=application.id)
+    
+    
+
+
+
+
+
+
+### API
+
+# api/views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from applications.models import Application
+from users.models import User
+from .forms import QueueCheckForm
+from .serializers import QueueCheckResponseSerializer, QueueSerializer
+from django.contrib import messages
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
+@method_decorator(csrf_exempt, name='dispatch')
+class QueueCheckAPIView(APIView):
+    @swagger_auto_schema(
+        request_body=QueueSerializer,
+        responses={
+            200: QueueCheckResponseSerializer,
+            400: "Bad Request"
+        },
+        operation_description="Login a user"
+    )
+
+    def post(self, request):
+        # Validate input
+        serializer = QueueSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        iin = serializer.validated_data['iin']
+        
+        try:
+            # Find the user
+            user = User.objects.get(iin=iin)
+            
+            # Get the user's first application in relevant statuses
+            application = Application.objects.filter(
+                applicant=user,
+                status__in=['SUBMITTED', 'UNDER_REVIEW', 'IN_QUEUE']
+            ).order_by('submission_date').first()
+            
+            if not application:
+                return Response({
+                    'message': 'No active applications found for this IIN.'
+                }, status=status.HTTP_404_NOT_FOUND)
+            
+            # Get all applications in queue, ordered by priority and submission date
+            all_queued_applications = Application.objects.filter(
+                status__in=['SUBMITTED', 'UNDER_REVIEW', 'IN_QUEUE']
+            ).order_by('-priority_score', 'submission_date')
+            
+            # Calculate queue position
+            queue_position = list(all_queued_applications).index(application) + 1
+            
+            # Return only the queue position
+            response_data = {'queue_position': queue_position}
+            return Response(response_data, status=status.HTTP_200_OK)
+        
+        except User.DoesNotExist:
+            return Response({
+                'message': 'No user found with this IIN.'
+            }, status=status.HTTP_404_NOT_FOUND)

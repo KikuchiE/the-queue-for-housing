@@ -9,3 +9,4 @@ media/profile_pictures/*.jpg
 media/profile_pictures/*.jpeg
 media/application_documents/*
 .idea/
+bot/
