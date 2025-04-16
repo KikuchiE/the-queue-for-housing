@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from django.core.validators import MinValueValidator
 
 class HousingUnit(models.Model):
     UNIT_STATUS = [
@@ -11,9 +12,9 @@ class HousingUnit(models.Model):
     
     unit_number = models.CharField(max_length=20, unique=True)
     address = models.TextField()
-    floor = models.PositiveSmallIntegerField()
+    floor = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)])
     total_area = models.DecimalField(max_digits=6, decimal_places=2)
-    rooms_count = models.PositiveSmallIntegerField()
+    rooms_count = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)])
     status = models.CharField(max_length=20, choices=UNIT_STATUS, default='AVAILABLE')
     # is_accessible = models.BooleanField(default=False)
     # monthly_rent = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)

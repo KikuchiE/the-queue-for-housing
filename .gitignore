@@ -10,3 +10,4 @@ media/profile_pictures/*.jpeg
 media/application_documents/*
 .idea/
 bot/
+.env

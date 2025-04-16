@@ -1,6 +1,10 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from dotenv import load_dotenv
 import requests
+import os
+
+load_dotenv()
 
 API_URL = "http://localhost:8000/api/check-queue/" 
 # Define the start command handler
@@ -13,6 +17,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/start - Start the bot\n"
         "/help - Show this help message\n"
         "/echo - Echo your message\n"
+        "/check_queue_position <IIN> - Check your queue position by IIN\n"
         "Or just send any message, and I'll respond!"
     )
 
@@ -50,8 +55,9 @@ async def check_queue_position(update: Update, context: ContextTypes.DEFAULT_TYP
 # Main function to run the bot
 if __name__ == '__main__':
     # Replace 'YOUR_BOT_TOKEN_HERE' with your actual bot token from @BotFather
-    TOKEN = '8186349035:AAFf-v08VFET2lylJj31Fptja-g0v-WO45k'
-    app = ApplicationBuilder().token('8186349035:AAFf-v08VFET2lylJj31Fptja-g0v-WO45k').build()
+    TOKEN = os.getenv('TELEGRAM_TOKEN')
+    print(TOKEN)
+    app = ApplicationBuilder().token(TOKEN).build()
 
     # Add a command handler for /start
     app.add_handler(CommandHandler('start', start))
