@@ -20,7 +20,7 @@
 					{% if user.is_authenticated %}
 					<div class="flex items-center space-x-4">
 						<div>
-							<a href="{% url 'notification_list' %}">Notifications</a>
+							<a href="{% url 'notification_list' %}"><i class="fas fa-bell"></i></a>
 						</div>
 						<span class="text-gray-800">{{ user.first_name }} {{ user.last_name }}</span>
 						<a href="/accounts/profile">
