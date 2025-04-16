@@ -7,10 +7,43 @@ class ApplicantDataForm(forms.ModelForm):
         (False, 'На себя'),  # Applying for themselves
         (True, 'За опекаемого'),  # Applying for a dependent
     ]
+    AWARD_CHOICES = [
+        ('NO_AWARD', 'Нет наград'),  # No awards
+        ('ALTYN_ALQA', 'Алтын алқа'),  # Altyn alqa
+        ('KUMIS_ALQA', 'Күміс алқа'),  # Kumis alqa
+        ('MOTHER_HEROINE', 'Мать-героиня'),  # Mother heroine
+        ('MATERNAL_GLORY_I', 'Орден "Материнская слава" I степени'),  # Maternal glory I
+        ('MATERNAL_GLORY_II', 'Орден "Материнская слава" II степени'),  # Maternal glory II
+    ]
 
+    CATEGORY_CHOICES = [
+        # ('VETERAN', 'Veteran of the Great Patriotic War'),
+        ('', 'Выберите категорию'),  # Select category
+        ('ORPHAN', 'Сирота или ребенок, оставшийся без попечения родителей'),  # Orphan or child without parental care
+        ('LARGE_FAMILY', 'Многодетная семья с наградами'),  # Large family with awards or many children
+        ('SOCIAL_VULNERABLE', 'Социально уязвимая группа'),  # Socially vulnerable group
+        ('GOVERNMENT_EMPLOYEE', 'Государственный служащий'),  # Government employee
+        ('BUDGET_WORKER', 'Работник бюджетной организации'),  # Budget organization worker
+        ('MILITARY', 'Военнослужащий'),  # Military personnel
+        ('ASTRONAUT', 'Космонавт или кандидат в космонавты'),  # Astronaut or candidate
+        ('ELECTED_OFFICIAL', 'Выборное должностное лицо'),  # Elected official
+        ('EMERGENCY_HOUSING', 'Гражданин, проживающий в аварийном жилье'),  # Citizen with emergency housing
+    ]
+
+
+    category = forms.ChoiceField(
+        choices=CATEGORY_CHOICES,
+        widget=forms.Select(attrs={'class': 'w-full p-2 border rounded'}),
+        required=True
+    )
     is_for_ward = forms.ChoiceField(
         choices=APPLICANT_CHOICES,
         widget=forms.RadioSelect(attrs={'class': 'hidden'}),
+        required=True
+    )
+    large_family_awards = forms.ChoiceField(
+        choices=AWARD_CHOICES,
+        widget=forms.Select(attrs={'class': 'w-full p-2 border rounded'}),
         required=True
     )
     class Meta:
@@ -22,6 +55,8 @@ class ApplicantDataForm(forms.ModelForm):
             'current_living_area',
             'current_address',
             'is_homeless',
+            'large_family_awards',
+            'category',
         ]
         widgets = {
             'current_residence_condition': forms.Select(attrs={'class': 'w-full p-2 border rounded'}),

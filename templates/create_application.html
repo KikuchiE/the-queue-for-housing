@@ -79,6 +79,24 @@
 								<span>Отсутствие постоянного жилья</span>
 							</label>
 						</div>
+						<div class="mb-4">
+							<label for="{{ applicant_form.category.id_for_label }}" class="block text-sm font-medium text-gray-700">
+								Category
+							</label>
+							{{ applicant_form.category }}
+							{% if applicant_form.category.errors %}
+								<p class="text-red-500 text-sm mt-1">{{ applicant_form.category.errors.0 }}</p>
+							{% endif %}
+						</div>
+						<div class="mb-4">
+							<label class="block text-sm font-medium text-gray-700">
+								Award (for large families)
+							</label>
+							<div class="space-y-2">
+								{{ applicant_form.large_family_awards }}
+							</div>
+						</div>
+						
 					</div>
 				</div>
 

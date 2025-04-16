@@ -136,6 +136,14 @@
 						<span class="font-medium text-gray-600">Homeless:</span>
 						<span>{{ application.is_homeless|yesno:"Yes,No" }}</span>
 					</div>
+					<div class="flex justify-between">
+						<span class="font-medium text-gray-600">Category:</span>
+						<span>{{ application.get_category_display }}</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="font-medium text-gray-600">Award:</span>
+						<span>{{ application.get_large_family_awards_display }}</span>
+					</div>
 				</div>
 			</div>
 		</div>
