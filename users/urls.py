@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import AuthenticateView, CreateApplicationView, UploadDocumentView
 
 app_name = "users"
 
@@ -23,4 +24,8 @@ urlpatterns = [
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('profile/update/', views.UpdateProfileView.as_view(), name='update_profile'),
     path('profile/delete/', views.DeleteAccountView.as_view(), name='delete_account'),
+] + [
+    path('api/authenticate/', AuthenticateView.as_view(), name='authenticate'),
+    path('api/applications/', CreateApplicationView.as_view(), name='create_application'),
+    path('api/applications/<int:application_id>/documents/', UploadDocumentView.as_view(), name='upload_document'),
 ]

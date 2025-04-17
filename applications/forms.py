@@ -72,7 +72,7 @@ class FamilyDataForm(forms.ModelForm):
     is_single_parent_document = forms.FileField(required=False, widget=forms.FileInput(attrs={'class': 'w-full p-2 border rounded'}))
     is_veteran_document = forms.FileField(required=False, widget=forms.FileInput(attrs={'class': 'w-full p-2 border rounded'}))
     disability_document = forms.FileField(required=False, widget=forms.FileInput(attrs={'class': 'w-full p-2 border rounded'}))
-    id_proof_document = forms.FileField(required=True, widget=forms.FileInput(attrs={'class': 'w-full p-2 border rounded'}))
+    id_proof_document = forms.FileField(required=False, widget=forms.FileInput(attrs={'class': 'w-full p-2 border rounded'}))
     
     class Meta:
         model = Application

@@ -38,3 +38,27 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid credentials")
         data['user'] = user
         return data
+
+
+
+# API BOT
+
+from rest_framework import serializers
+from applications.models import Application, ApplicationDocument
+
+class ApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Application
+        fields = [
+            'id',
+            'category', 'is_for_ward', 'current_address', 'is_homeless',
+            'current_residence_condition', 'monthly_income', 'current_living_area',
+            'is_veteran', 'is_single_parent', 'has_disability', 'disability_details',
+            'adults_count', 'children_count', 'elderly_count'
+        ]
+
+class ApplicationDocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApplicationDocument
+        fields = ['document_type', 'file', 'document_name']
+

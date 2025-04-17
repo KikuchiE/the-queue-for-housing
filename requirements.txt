@@ -3,4 +3,3 @@ psycopg2-binary
 pillow
 djangorestframework
 drf-yasg
-python-telegram-bot==13.7

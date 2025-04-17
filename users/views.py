@@ -227,3 +227,95 @@ class ProfileView(APIView):
             serializer = UserSerializer(request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return render(request, "users/profile.html", {'user': request.user})
+
+
+
+
+## Telegram bot api
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth.hashers import check_password
+from .models import User
+from applications.models import Application, ApplicationDocument
+from .serializers import ApplicationSerializer
+from rest_framework.parsers import MultiPartParser
+
+class AuthenticateView(APIView):
+    def post(self, request):
+        iin = request.data.get('iin')
+        password = request.data.get('password')
+        print("\n\n\n\n\n")
+        print("iin:", iin)
+        print("password:", password)
+        print("\n\n\n\n\n")
+        if not iin or not password:
+            return Response({'error': 'IIN and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(iin=iin)
+            if check_password(password, user.password):
+                return Response({'message': 'Authentication successful'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid password'}, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class CreateApplicationView(APIView):
+    def post(self, request):
+        iin = request.data.get('iin')
+        password = request.data.get('password')
+        print("\n\n\n")
+        print("data:", request.data)
+        print("iin:", iin)
+        print("password:", password)
+        print("\n\n\n")
+        if not iin or not password:
+            return Response({'error': 'IIN and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(iin=iin)
+            if check_password(password, user.password):
+                serializer = ApplicationSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.save(applicant=user)
+                    print("\n\n\n")
+                    print("serializer.data:", serializer.data)
+                    print("\n\n\n")
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'error': 'Invalid password'}, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class UploadDocumentView(APIView):
+    parser_classes = [MultiPartParser]
+
+    def post(self, request, application_id):
+        iin = request.data.get('iin')
+        password = request.data.get('password')
+        document_type = request.data.get('document_type')
+        file = request.FILES.get('file')
+        
+        if not all([iin, password, document_type, file]):
+            return Response({'error': 'Missing required fields'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(iin=iin)
+            if check_password(password, user.password):
+                try:
+                    application = Application.objects.get(id=application_id, applicant=user)
+                    document = ApplicationDocument(
+                        application=application,
+                        document_type=document_type,
+                        file=file
+                    )
+                    document.save()
+                    return Response({'message': 'Document uploaded successfully'}, status=status.HTTP_201_CREATED)
+                except Application.DoesNotExist:
+                    return Response({'error': 'Application not found or not owned by user'}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response({'error': 'Invalid password'}, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
