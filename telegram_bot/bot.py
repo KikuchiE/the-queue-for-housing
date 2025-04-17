@@ -6,6 +6,7 @@ import os
 
 load_dotenv()
 
+CHECK_QUEUE_URL = "http://localhost:8000/api/check-queue/"
 API_URL = "http://localhost:8000/accounts/api/"
 APP_URL = "http://localhost:8000/my-application/"
 TOKEN = os.getenv('TELEGRAM_TOKEN')
@@ -40,7 +41,7 @@ async def check_queue_position(update: Update, context: ContextTypes.DEFAULT_TYP
         return
     
     try:
-        response = requests.post(f"{API_URL}check-queue/", json={"iin": iin})
+        response = requests.post(f"{CHECK_QUEUE_URL}", json={"iin": iin})
         if response.status_code == 200:
             data = response.json()
             queue_position = data.get("queue_position")
