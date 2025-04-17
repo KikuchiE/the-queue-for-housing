@@ -45,3 +45,27 @@ A housing waiting list system with automatic priority calculation. Automates the
     python manage.py runserver
     ```
 2. Open your browser and navigate to `http://localhost:8000`.
+
+## Telegram bot
+
+1. Create a bot using the BotFather on Telegram and get the token.
+2. Add the token to your environment variables or directly in the code.
+3. Create .env file in the telegram_bot directory and add the following variables:
+    ```env
+    TELEGRAM_BOT_TOKEN=your_token_here
+    ```
+4. Telegram Bot is located in telegram_bot directory.
+    ```bash
+    cd telegram_bot
+    ```
+5. Install the required libraries:
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    pip install -r requirements.txt
+    ```
+6. Run the bot script:
+    ```bash
+
+    python bot.py
+    ```
